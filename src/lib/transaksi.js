@@ -1,11 +1,5 @@
     import pool from "@/lib/db";
 
-    // Menjalankan beberapa query sebagai satu transaksi (BEGIN ... COMMIT, ROLLBACK bila gagal),
-    // seperti pola transaksi di modul. Fungsi "kerja" menerima koneksi (klien) dan
-    // boleh melempar galat berpesan lewat galatPengguna("...").
-    //
-    //   const hasil = await jalankanTransaksi(async (klien) => { await klien.query(...); });
-    //   if (!hasil.ok) kembaliGalat("/halaman", hasil.pesan);
     export async function jalankanTransaksi(kerja) {
     let klien;
     try {
@@ -26,12 +20,10 @@
     }
     }
 
-    // Galat yang pesannya aman ditampilkan ke pengguna
     export function galatPengguna(pesan) {
     return Object.assign(new Error(pesan), { untukPengguna: true });
     }
 
-    // Menjalankan satu query tulis (INSERT/UPDATE/DELETE). Mengembalikan { ok, rowCount, rows }.
     export async function jalankanQuery(sql, params = []) {
     try {
         const hasil = await pool.query(sql, params);
