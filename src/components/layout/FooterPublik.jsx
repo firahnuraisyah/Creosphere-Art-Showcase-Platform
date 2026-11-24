@@ -1,54 +1,25 @@
-    import Link from "next/link";
-    import Logo from "@/components/layout/Logo";
-    import { ambilBanyak } from "@/lib/query";
+import Link from "next/link";
+import Logo from "@/components/layout/Logo";
 
-    export default async function FooterPublik() {
-    const kategori = await ambilBanyak("SELECT id, name FROM categories ORDER BY id LIMIT 3");
-
+// Footer halaman publik
+export default function FooterPublik() {
+    const tautan = "font-body text-body-sm text-on-surface-variant hover:text-on-surface transition-colors duration-state-change";
     return (
-        <footer className="border-t border-light-outline-variant bg-light-surface py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div className="space-y-3">
-            <Logo ukuran="text-xl" />
-            <p className="text-body-sm text-light-on-surface-variant">
-                Ruang global bagi seniman untuk berbagi, memamerkan, dan mengapresiasi kreativitas.
+        <footer className="bg-surface-container-low border-t border-outline-variant py-8 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <Logo ukuran="text-title-md" />
+            <p className="font-body text-body-sm text-outline text-center">
+            Ruang global bagi seniman untuk berbagi, memamerkan, dan mengapresiasi kreativitas.
             </p>
-            </div>
-            <div>
-            <h4 className="font-headline text-title-md font-semibold text-light-on-surface mb-3">Jelajahi</h4>
-            <ul className="space-y-2 text-body-sm text-light-on-surface-variant">
-                <li><Link href="/artworks" className="hover:text-light-primary">Semua Karya</Link></li>
-                {kategori.map((k) => (
-                <li key={k.id}>
-                    <Link href={"/artworks?kategori=" + k.id} className="hover:text-light-primary">{k.name}</Link>
-                </li>
-                ))}
-            </ul>
-            </div>
-            <div>
-            <h4 className="font-headline text-title-md font-semibold text-light-on-surface mb-3">Komunitas</h4>
-            <ul className="space-y-2 text-body-sm text-light-on-surface-variant">
-                <li><Link href="/artists" className="hover:text-light-primary">Temukan Seniman</Link></li>
-                <li><Link href="/challenges" className="hover:text-light-primary">Challenge Seni</Link></li>
-                <li><Link href="/login" className="hover:text-light-primary">Portal Member</Link></li>
-            </ul>
-            </div>
-            <div>
-            <h4 className="font-headline text-title-md font-semibold text-light-on-surface mb-3">Curator &amp; Lembaga</h4>
-            <ul className="space-y-2 text-body-sm text-light-on-surface-variant">
-                <li><Link href="/register" className="hover:text-light-primary">Daftar sebagai Curator</Link></li>
-                <li><Link href="/login" className="hover:text-light-primary">Dashboard Curator</Link></li>
-            </ul>
+            <div className="flex items-center gap-5">
+            <Link href="/artworks" className={tautan}>Kategori</Link>
+            <Link href="/challenges" className={tautan}>Challenge</Link>
+            <Link href="/register" className={tautan}>Gabung</Link>
             </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 pt-6 border-t border-light-outline-variant flex flex-col sm:flex-row items-center justify-between text-body-sm text-light-on-surface-variant gap-4">
-            <p>© 2026 Creosphere. Proyek Akhir — Praktikum Pemrograman Web. Hak cipta dilindungi.</p>
-            <div className="flex items-center gap-6">
-            <span>Kebijakan Privasi</span>
-            <span>Ketentuan Komunitas</span>
-            <span>Pedoman Konten</span>
-            </div>
-        </div>
+        <p className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 text-center font-label text-label-md text-outline">
+            © 2026 Creosphere. Proyek Akhir — Praktikum Pemrograman Web.
+        </p>
         </footer>
     );
-    }
+}
