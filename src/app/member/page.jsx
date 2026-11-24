@@ -1,43 +1,53 @@
-    import Link from "next/link";
-    import { Plus, Image as IkonGambar, Heart, Trophy, Bookmark, ArrowUpRight } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak, ambilSatu } from "@/lib/query";
-    import { formatAngka, formatTanggalPendek, inisial, waktuRelatif } from "@/lib/format";
-    import GambarKarya from "@/components/ui/GambarKarya";
+import Link from "next/link";
+import { Plus, Image as IkonGambar, Heart, Trophy, Bookmark, ArrowUpRight } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { formatAngka, formatTanggalPendek, inisial, waktuRelatif } from "@/lib/format";
+import GambarKarya from "@/components/ui/GambarKarya";
 
-    export const metadata = { title: "Dashboard Member" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Dashboard Member" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanDashboardMember() {
+export default async function HalamanDashboardMember() {
     const pengguna = await wajibPeran(["member"]);
 
-    const totalKarya = await ambilSatu("SELECT COUNT(*) AS jumlah FROM artworks WHERE user_id = $1", [pengguna.id]);
-    const karyaBulanIni = await ambilSatu(
+    // Query yang saling tidak bergantung dijalankan bersamaan (Promise.all)
+    const [
+        totalKarya,
+        karyaBulanIni,
+        totalLike,
+        submisiMember,
+        totalFavorit,
+        karyaTerbaru,
+        komentar,
+        penghargaan,
+    ] = await Promise.all([
+        ambilSatu("SELECT COUNT(*) AS jumlah FROM artworks WHERE user_id = $1", [pengguna.id]),
+        ambilSatu(
         "SELECT COUNT(*) AS jumlah FROM artworks WHERE user_id = $1 AND created_at >= date_trunc('month', NOW())",
         [pengguna.id]
-    );
-    const totalLike = await ambilSatu(
+        ),
+        ambilSatu(
         "SELECT COUNT(*) AS jumlah FROM likes l JOIN artworks a ON a.id = l.artwork_id WHERE a.user_id = $1",
         [pengguna.id]
-    );
-    const submisiAktif = await ambilBanyak(
-        `SELECT ch.title FROM submissions s
+        ),
+        ambilBanyak(
+        `SELECT ch.title, ch.start_date, ch.end_date FROM submissions s
         JOIN challenges ch ON ch.id = s.challenge_id
-        WHERE s.user_id = $1 AND CURRENT_DATE <= ch.end_date
+        WHERE s.user_id = $1
         ORDER BY ch.end_date ASC`,
         [pengguna.id]
-    );
-    const totalFavorit = await ambilSatu("SELECT COUNT(*) AS jumlah FROM favorites WHERE user_id = $1", [pengguna.id]);
-
-    const karyaTerbaru = await ambilBanyak(
+        ),
+        ambilSatu("SELECT COUNT(*) AS jumlah FROM favorites WHERE user_id = $1", [pengguna.id]),
+        ambilBanyak(
         `SELECT a.id, a.title, a.file_url, a.created_at, c.name AS kategori,
                 (SELECT COUNT(*) FROM likes l WHERE l.artwork_id = a.id) AS jumlah_like
         FROM artworks a JOIN categories c ON c.id = a.category_id
         WHERE a.user_id = $1 ORDER BY a.created_at DESC LIMIT 2`,
         [pengguna.id]
-    );
-
-    const komentar = await ambilBanyak(
+        ),
+        ambilBanyak(
         `SELECT c.body, c.created_at, u.display_name, a.id AS artwork_id, a.title
         FROM comments c
         JOIN artworks a ON a.id = c.artwork_id
@@ -45,8 +55,8 @@
         WHERE a.user_id = $1 AND c.user_id <> $1
         ORDER BY c.created_at DESC LIMIT 5`,
         [pengguna.id]
-    );
-    const penghargaan = await ambilBanyak(
+        ),
+        ambilBanyak(
         `SELECT w.rank, w.created_at, a.title, ch.title AS challenge
         FROM winners w
         JOIN submissions s ON s.id = w.submission_id
@@ -55,8 +65,11 @@
         WHERE s.user_id = $1
         ORDER BY w.created_at DESC LIMIT 5`,
         [pengguna.id]
-    );
+        ),
+    ]);
+    const submisiAktif = submisiMember.filter((s) => hitungStatus(s.start_date, s.end_date) !== "berakhir");
 
+    // Gabungkan komentar + penghargaan, urutkan dari yang terbaru, ambil 5
     const aktivitas = [
         ...komentar.map((k) => ({ jenis: "komentar", waktu: k.created_at, data: k })),
         ...penghargaan.map((p) => ({ jenis: "penghargaan", waktu: p.created_at, data: p })),
@@ -78,7 +91,7 @@
             <div className="flex items-center gap-3">
             <Link
                 href="/member/artworks/new"
-                className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-[#6e3522] transition-colors shadow-sm flex items-center gap-2"
+                className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-primary-hover transition-colors shadow-sm flex items-center gap-2"
             >
                 <Plus className="w-4 h-4" />
                 <span>Unggah Karya Baru</span>
@@ -213,4 +226,4 @@
         </div>
         </div>
     );
-    }
+}

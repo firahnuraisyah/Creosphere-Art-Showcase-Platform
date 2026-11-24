@@ -60,7 +60,7 @@
                 <div className="space-y-3">
                     <p className="text-body-sm text-light-on-surface">Anda harus masuk sebagai Member untuk melaporkan karya.</p>
                     <div className="flex justify-end">
-                    <a href={"/login?next=/artworks/" + idKarya} className="px-4 py-2 rounded bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-[#6e3522]">Masuk</a>
+                    <a href={"/login?next=/artworks/" + idKarya} className="px-4 py-2 rounded bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-primary-hover">Masuk</a>
                     </div>
                 </div>
                 )}

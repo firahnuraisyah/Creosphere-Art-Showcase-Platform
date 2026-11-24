@@ -85,7 +85,7 @@
             <Link href="/curator" className="px-5 py-2.5 rounded border border-light-outline text-body-sm font-medium hover:bg-warm-cream">
                 Batal
             </Link>
-            <TombolKirim className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] text-body-sm shadow-sm">
+            <TombolKirim className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover text-body-sm shadow-sm">
                 Simpan Profil
             </TombolKirim>
             </div>

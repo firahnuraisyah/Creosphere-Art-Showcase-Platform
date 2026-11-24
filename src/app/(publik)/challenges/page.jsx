@@ -123,7 +123,7 @@
                         href={"/challenges/" + c.id}
                         className={
                         c.status === "aktif"
-                            ? "w-full py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors flex items-center justify-center gap-2 text-body-sm shadow-sm"
+                            ? "w-full py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 text-body-sm shadow-sm"
                             : "w-full py-2.5 px-4 rounded-DEFAULT bg-warm-cream border border-light-outline text-light-on-surface font-medium hover:bg-sand/30 transition-colors flex items-center justify-center gap-2 text-body-sm"
                         }
                     >

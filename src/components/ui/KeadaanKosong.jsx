@@ -13,7 +13,7 @@
         {tombol && (
             <Link
             href={tombol.href}
-            className="mt-5 px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-[#6e3522] transition-colors shadow-sm inline-flex items-center gap-2"
+            className="mt-5 px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-primary-hover transition-colors shadow-sm inline-flex items-center gap-2"
             >
             {tombol.teks}
             </Link>

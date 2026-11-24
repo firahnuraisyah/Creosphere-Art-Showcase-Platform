@@ -175,7 +175,7 @@
             </Link>
             <TombolKirim
                 teksMemuat="Menyimpan..."
-                className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors shadow-sm text-body-sm flex items-center gap-2"
+                className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors shadow-sm text-body-sm flex items-center gap-2"
             >
                 Simpan Perubahan
             </TombolKirim>

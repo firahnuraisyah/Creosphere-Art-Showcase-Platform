@@ -23,7 +23,7 @@
                 Karya, seniman, atau halaman yang Anda cari mungkin sudah dipindahkan, diturunkan, atau tidak pernah ada.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/" className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors shadow-sm inline-flex items-center justify-center gap-2">
+                <Link href="/" className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors shadow-sm inline-flex items-center justify-center gap-2">
                 <Home className="w-4 h-4" />
                 <span>Kembali ke Beranda</span>
                 </Link>

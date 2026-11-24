@@ -46,7 +46,7 @@
                 Kelola kompetisi yang Anda selenggarakan, tinjau submisi karya komunitas, dan tetapkan para pemenang.
             </p>
             </div>
-            <Link href="/curator/challenges/new" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors text-body-sm shadow-sm flex items-center gap-2">
+            <Link href="/curator/challenges/new" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2">
             <Plus className="w-4 h-4" />
             <span>Buat Challenge Baru</span>
             </Link>
@@ -100,7 +100,7 @@
                 </p>
                 </div>
                 <div className="flex items-center gap-3">
-                <Link href={"/curator/challenges/" + sorotan.id + "/submissions"} className="px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-[#6e3522] transition-colors flex items-center gap-1.5 shadow-sm">
+                <Link href={"/curator/challenges/" + sorotan.id + "/submissions"} className="px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-primary-hover transition-colors flex items-center gap-1.5 shadow-sm">
                     <Eye className="w-4 h-4" />
                     <span>Tinjau Submisi ({formatAngka(sorotan.jumlah_submisi)})</span>
                 </Link>
