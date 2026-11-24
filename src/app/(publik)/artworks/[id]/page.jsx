@@ -22,9 +22,9 @@ export async function generateMetadata({ params }) {
     const idAngka = ubahKeId(id);
     const karya = idAngka ? await ambilSatu("SELECT title FROM artworks WHERE id = $1", [idAngka]) : null;
     return { title: karya ? karya.title : "Karya" };
-}
+    }
 
-export default async function DetailKarya({ params, searchParams }) {
+    export default async function DetailKarya({ params, searchParams }) {
     const { id } = await params;
     const { galat, sukses } = await searchParams;
     const idKarya = ubahKeId(id);
@@ -115,7 +115,7 @@ export default async function DetailKarya({ params, searchParams }) {
                     </div>
                 </div>
                 )}
-                
+                {/* Aksi interaksi: suka, favorit, laporkan */}
                 <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-light-outline-variant">
                 <form action={toggleSuka}>
                     <input type="hidden" name="artwork_id" value={karya.id} />
