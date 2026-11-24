@@ -1,22 +1,22 @@
-    import Link from "next/link";
-    import { notFound } from "next/navigation";
-    import { Award, Trophy, Check, Info, Hourglass } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu, ambilBanyak } from "@/lib/query";
-    import { hitungStatus } from "@/lib/challenge";
-    import { formatTanggal } from "@/lib/format";
-    import { ubahKeId } from "@/lib/validasi";
-    import { kelasInput } from "@/lib/gaya";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import { simpanPemenang } from "../../../actions";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Award, Trophy, Check, Info, Hourglass } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu, ambilBanyak } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { formatTanggal } from "@/lib/format";
+import { ubahKeId } from "@/lib/validasi";
+import { kelasInput } from "@/lib/gaya";
+import GambarKarya from "@/components/ui/GambarKarya";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKirim from "@/components/ui/TombolKirim";
+import { simpanPemenang } from "../../../actions";
 
-    export const metadata = { title: "Pilih Pemenang" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Pilih Pemenang" };
+export const dynamic = "force-dynamic";
 
-    const PERINGKAT = [
+const PERINGKAT = [
     {
         nomor: 1,
         kartu: "bg-light-surface rounded-xl border-2 border-amber-300 p-6 shadow-sm space-y-4",
@@ -66,7 +66,7 @@
         JOIN artworks a ON a.id = s.artwork_id
         JOIN users u ON u.id = s.user_id
         JOIN categories c ON c.id = a.category_id
-        WHERE s.challenge_id = $1 ORDER BY a.title`,
+        WHERE s.challenge_id = $1 ORDER BY a.created_at DESC`,
         [id]
     );
     const pemenang = await ambilBanyak(
@@ -163,4 +163,4 @@
         )}
         </div>
     );
-    }
+}

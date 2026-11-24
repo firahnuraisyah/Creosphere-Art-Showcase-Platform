@@ -1,18 +1,18 @@
-    import Link from "next/link";
-    import { Trophy, Images } from "lucide-react";
-    import { notFound } from "next/navigation";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu, ambilBanyak } from "@/lib/query";
-    import { hitungStatus } from "@/lib/challenge";
-    import { formatTanggal, formatAngka } from "@/lib/format";
-    import { ubahKeId } from "@/lib/validasi";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Link from "next/link";
+import { Trophy, Images } from "lucide-react";
+import { notFound } from "next/navigation";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu, ambilBanyak } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { formatTanggal, formatAngka } from "@/lib/format";
+import { ubahKeId } from "@/lib/validasi";
+import GambarKarya from "@/components/ui/GambarKarya";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
 
-    export const metadata = { title: "Submisi Challenge" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Submisi Challenge" };
+export const dynamic = "force-dynamic";
 
-    export default async function SubmisiChallenge({ params }) {
+export default async function SubmisiChallenge({ params }) {
     const pengguna = await wajibPeran(["curator"], { harusDisetujui: true });
     const { id: idTeks } = await params;
     const id = ubahKeId(idTeks);
@@ -32,7 +32,7 @@
         JOIN users u ON u.id = s.user_id
         JOIN categories c ON c.id = a.category_id
         WHERE s.challenge_id = $1
-        ORDER BY s.created_at DESC`,
+        ORDER BY a.created_at DESC`,
         [id]
     );
     const berakhir = hitungStatus(challenge.start_date, challenge.end_date) === "berakhir";
@@ -102,4 +102,4 @@
         )}
         </div>
     );
-    }
+}

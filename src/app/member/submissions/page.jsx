@@ -1,19 +1,19 @@
-    import Link from "next/link";
-    import { Compass, XCircle, Trophy, Send } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { formatTanggalPendek } from "@/lib/format";
-    import { hitungStatus, sisaHari } from "@/lib/challenge";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { tarikSubmisi } from "./actions";
+import Link from "next/link";
+import { Compass, XCircle, Trophy, Send } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { formatTanggalPendek } from "@/lib/format";
+import { hitungStatus, sisaHari } from "@/lib/challenge";
+import GambarKarya from "@/components/ui/GambarKarya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { tarikSubmisi } from "./actions";
 
-    export const metadata = { title: "Submisi Saya" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Submisi Saya" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanSubmisiSaya({ searchParams }) {
+export default async function HalamanSubmisiSaya({ searchParams }) {
     const pengguna = await wajibPeran(["member"]);
     const { galat, sukses } = await searchParams;
 
@@ -27,7 +27,7 @@
         JOIN users cu ON cu.id = ch.curator_id
         LEFT JOIN winners w ON w.submission_id = s.id
         WHERE s.user_id = $1
-        ORDER BY s.created_at DESC`,
+        ORDER BY a.created_at DESC, s.id DESC`,
         [pengguna.id]
     );
 
@@ -42,7 +42,7 @@
             </div>
             <Link
             href="/challenges"
-            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors text-body-sm shadow-sm flex items-center gap-2"
+            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2"
             >
             <Compass className="w-4 h-4" />
             <span>Lihat Challenge Terbuka</span>
@@ -123,7 +123,10 @@
                             <TombolKonfirmasi
                             aksi={tarikSubmisi}
                             nilai={{ id: item.id }}
-                            pesan="Tarik karya ini dari challenge? Anda dapat mengikutkan karya lain selama challenge masih aktif."
+                            judulDialog="Tarik Submisi?"
+                            item={item.judul_karya}
+                            pesan={"Karya ditarik dari challenge " + item.judul_challenge + ". Anda dapat mengikutkan karya lain selama challenge masih aktif."}
+                            teksAksi="Tarik Submisi"
                             className="px-4 py-2 rounded bg-rose-50 text-danger border border-rose-200 text-body-sm font-medium hover:bg-rose-100 transition-colors flex items-center gap-1.5"
                             >
                             <XCircle className="w-4 h-4" />
@@ -140,4 +143,4 @@
         )}
         </div>
     );
-    }
+}

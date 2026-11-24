@@ -1,31 +1,31 @@
-    import { Check, UserCheck } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { formatTanggal } from "@/lib/format";
-    import Avatar from "@/components/ui/Avatar";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { setujuiCurator, tolakCurator } from "../actions";
+import { Check, UserCheck } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { formatTanggal } from "@/lib/format";
+import Avatar from "@/components/ui/Avatar";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { setujuiCurator, tolakCurator } from "../actions";
 
-    export const metadata = { title: "Persetujuan Curator" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Persetujuan Curator" };
+export const dynamic = "force-dynamic";
 
-    function bacaWebsite(teks) {
+function bacaWebsite(teks) {
     try {
         return (teks && JSON.parse(teks).website) || "";
     } catch {
         return "";
     }
-    }
+}
 
-    export default async function PersetujuanCurator({ searchParams }) {
+export default async function PersetujuanCurator({ searchParams }) {
     await wajibPeran(["admin"]);
     const { galat, sukses } = await searchParams;
 
     const daftar = await ambilBanyak(
         `SELECT id, display_name, email, country, bio, external_links, avatar_url, created_at
-        FROM users WHERE role = 'curator' AND status = 'pending' ORDER BY created_at`
+        FROM users WHERE role = 'curator' AND status = 'pending' ORDER BY display_name ASC`
     );
 
     return (
@@ -67,7 +67,10 @@
                     <TombolKonfirmasi
                         aksi={tolakCurator}
                         nilai={{ id: c.id }}
-                        pesan="Tolak pendaftaran curator ini? Akun akan ditandai Ditolak dan hanya dapat menghapus akun."
+                        judulDialog="Tolak Curator?"
+                        item={c.display_name}
+                        pesan="Akun ditandai Ditolak dan pemiliknya hanya dapat menghapus akun."
+                        teksAksi="Tolak"
                         className="px-4 py-2 rounded bg-rose-50 text-danger border border-rose-200 text-body-sm font-semibold hover:bg-rose-100 transition-colors"
                     >
                         Tolak
@@ -75,7 +78,11 @@
                     <TombolKonfirmasi
                         aksi={setujuiCurator}
                         nilai={{ id: c.id }}
-                        pesan="Setujui akun curator ini?"
+                        judulDialog="Setujui Curator?"
+                        item={c.display_name}
+                        pesan="Curator dapat langsung membuat challenge dan tampil di daftar publik."
+                        teksAksi="Setujui"
+                        bahaya={false}
                         className="px-5 py-2 rounded-DEFAULT bg-success text-on-success text-body-sm font-semibold hover:bg-emerald-800 transition-colors shadow-sm flex items-center gap-1.5"
                     >
                         <Check className="w-4 h-4" />
@@ -89,4 +96,4 @@
         )}
         </div>
     );
-    }
+}
