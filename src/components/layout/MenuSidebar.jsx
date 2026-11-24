@@ -1,13 +1,14 @@
-    "use client";
+"use client";
 
-    import Link from "next/link";
-    import { usePathname } from "next/navigation";
-    import {
-    LayoutDashboard, Palette, Upload, Bookmark, Trophy, UserCog, Settings,
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+    LayoutDashboard, Palette, Upload, Bookmark, Trophy, UserCog,
     PlusCircle, Building2, UserCheck, ShieldAlert, Tags, Users,
-    } from "lucide-react";
+} from "lucide-react";
 
-    const DAFTAR_MENU = {
+// Daftar menu tiap peran. 
+const DAFTAR_MENU = {
     member: [
         { href: "/member", label: "Dashboard", ikon: LayoutDashboard },
         { href: "/member/artworks", label: "Karya Saya", ikon: Palette },
@@ -15,7 +16,6 @@
         { href: "/member/favorites", label: "Favorit Saya", ikon: Bookmark },
         { href: "/member/submissions", label: "Submisi Saya", ikon: Trophy },
         { href: "/member/profile", label: "Edit Profil", ikon: UserCog },
-        { href: "/member/account", label: "Pengaturan Akun", ikon: Settings },
     ],
     curator: [
         { href: "/curator", label: "Dashboard Curator", ikon: LayoutDashboard },
@@ -33,15 +33,15 @@
     };
 
     const kelasAktif = {
-    member: "bg-light-primary-container text-light-on-primary-container",
-    curator: "bg-light-secondary-container text-light-on-secondary-container",
-    admin: "bg-slate-800 text-white",
+    member: "bg-primary-container text-on-surface",
+    curator: "bg-primary-container text-on-surface",
+    admin: "bg-primary-container text-on-surface",
     };
-    const kelasIkonAktif = { member: "text-light-primary", curator: "text-olive", admin: "text-terracotta" };
+    const kelasIkonAktif = { member: "text-primary", curator: "text-primary", admin: "text-primary" };
     const kelasBiasa = {
-    member: "text-light-on-surface-variant hover:bg-warm-cream hover:text-light-on-surface",
-    curator: "text-light-on-surface-variant hover:bg-warm-cream hover:text-light-on-surface",
-    admin: "text-slate-300 hover:bg-slate-800 hover:text-white",
+    member: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
+    curator: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
+    admin: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
     };
 
     export default function MenuSidebar({ tema, lencana = {} }) {
@@ -62,10 +62,10 @@
             const jumlah = item.kunciLencana ? lencana[item.kunciLencana] : 0;
             const kelasLencana =
             item.warna === "bahaya"
-                ? "bg-rose-500/20 text-rose-300"
+                ? "bg-rose-50 text-danger"
                 : item.warna === "peringatan"
-                ? "bg-amber-500/20 text-amber-300"
-                : "bg-slate-700 text-slate-200";
+                ? "bg-amber-50 text-amber-700"
+                : "bg-surface-container text-on-surface-variant";
             return (
             <Link
                 key={item.href}
@@ -88,4 +88,4 @@
         })}
         </nav>
     );
-    }
+}

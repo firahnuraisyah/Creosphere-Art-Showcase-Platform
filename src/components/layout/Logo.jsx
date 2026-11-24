@@ -1,10 +1,12 @@
-    import Link from "next/link";
+import Link from "next/link";
 
-    export default function Logo({ warnaTitik = "bg-terracotta", teks = "text-light-on-surface", ukuran = "text-2xl" }) {
+export default function Logo({ teks = "text-on-surface", ukuran = "text-xl" }) {
     return (
-        <Link href="/" className="flex items-center gap-2.5 group">
-        <span className={"w-3.5 h-3.5 rounded-full transition-transform group-hover:scale-110 " + warnaTitik}></span>
-        <span className={"font-headline font-bold tracking-tight lowercase " + ukuran + " " + teks}>creosphere</span>
+        <Link
+        href="/"
+        className="inline-flex items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+        <span className={"font-headline font-bold tracking-tight " + ukuran + " " + teks}>Creosphere</span>
         </Link>
     );
-    }
+}
