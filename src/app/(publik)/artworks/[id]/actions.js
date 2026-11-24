@@ -1,38 +1,39 @@
-    "use server";
+"use server";
 
-    import { redirect } from "next/navigation";
-    import { revalidatePath } from "next/cache";
-    import pool from "@/lib/db";
-    import { ambilPengguna } from "@/lib/auth";
-    import { bacaTeks, cekWajib, cekPanjang, ubahKeId } from "@/lib/validasi";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import pool from "@/lib/db";
+import { ambilPengguna } from "@/lib/auth";
+import { bacaTeks, cekWajib, cekPanjang, ubahKeId } from "@/lib/validasi";
 
-    const ALASAN = {
+const ALASAN = {
     plagiarisme: "Plagiarisme atau pelanggaran kekayaan intelektual",
     tidak_pantas: "Konten tidak pantas atau eksplisit",
     kebencian: "Ujaran kebencian, pelecehan, atau diskriminasi",
     lainnya: "Pelanggaran lainnya",
-    };
+};
 
-    function kembali(id, jenis, pesan) {
+function kembali(id, jenis, pesan) {
     const url = "/artworks/" + id + "?" + jenis + "=" + encodeURIComponent(pesan);
     redirect(jenis === "galat" ? url + "#komentar" : url);
-    }
+}
 
-    async function cekAwal(formData) {
+async function cekAwal(formData) {
     const id = ubahKeId(formData.get("artwork_id"));
     if (!id) redirect("/artworks");
 
     const pengguna = await ambilPengguna();
     if (!pengguna) redirect("/login?next=" + encodeURIComponent("/artworks/" + id));
+    if (!pengguna.is_active) redirect("/nonaktif");
     if (pengguna.role !== "member") {
         kembali(id, "galat", "Hanya akun Member yang dapat berinteraksi dengan karya.");
     }
     const ada = await pool.query("SELECT user_id FROM artworks WHERE id = $1", [id]);
     if (ada.rows.length === 0) redirect("/artworks");
     return { id, pengguna, pemilikId: ada.rows[0].user_id };
-    }
+}
 
-    export async function toggleSuka(formData) {
+export async function toggleSuka(formData) {
     const { id, pengguna } = await cekAwal(formData);
     try {
         const hapus = await pool.query("DELETE FROM likes WHERE user_id = $1 AND artwork_id = $2", [pengguna.id, id]);
@@ -48,9 +49,9 @@
     }
     revalidatePath("/artworks/" + id);
     redirect("/artworks/" + id);
-    }
+}
 
-    export async function toggleFavorit(formData) {
+export async function toggleFavorit(formData) {
     const { id, pengguna } = await cekAwal(formData);
     try {
         const hapus = await pool.query("DELETE FROM favorites WHERE user_id = $1 AND artwork_id = $2", [pengguna.id, id]);
@@ -66,9 +67,9 @@
     }
     revalidatePath("/artworks/" + id);
     redirect("/artworks/" + id);
-    }
+}
 
-    export async function tambahKomentar(formData) {
+export async function tambahKomentar(formData) {
     const { id, pengguna } = await cekAwal(formData);
     const isi = bacaTeks(formData, "body");
     const galat = cekWajib(isi, "Komentar") || cekPanjang(isi, 500, "Komentar");
@@ -81,21 +82,21 @@
     }
     revalidatePath("/artworks/" + id);
     redirect("/artworks/" + id + "?sukses=" + encodeURIComponent("Komentar berhasil dikirim.") + "#komentar");
-    }
+}
 
-    export async function hapusKomentar(formData) {
+export async function hapusKomentar(formData) {
     const idKarya = ubahKeId(formData.get("artwork_id"));
     const idKomentar = ubahKeId(formData.get("comment_id"));
     if (!idKarya || !idKomentar) redirect("/artworks");
     const pengguna = await ambilPengguna();
     if (!pengguna) redirect("/login");
-    // kepemilikan dicek di SQL (user_id = pengguna)
+    if (!pengguna.is_active) redirect("/nonaktif");
     await pool.query("DELETE FROM comments WHERE id = $1 AND user_id = $2 AND artwork_id = $3", [idKomentar, pengguna.id, idKarya]);
     revalidatePath("/artworks/" + idKarya);
     redirect("/artworks/" + idKarya + "#komentar");
-    }
+}
 
-    export async function laporKarya(formData) {
+export async function laporKarya(formData) {
     const { id, pengguna, pemilikId } = await cekAwal(formData);
     const alasan = bacaTeks(formData, "reason");
     const catatan = bacaTeks(formData, "note");
@@ -116,4 +117,4 @@
         kembali(id, "galat", "Gagal mengirim laporan.");
     }
     kembali(id, "sukses", "Laporan terkirim ke antrean moderasi. Terima kasih.");
-    }
+}

@@ -1,20 +1,20 @@
-    import Link from "next/link";
-    import { redirect } from "next/navigation";
-    import { Palette, Award, Info, Check } from "lucide-react";
-    import HeaderAuth from "@/components/layout/HeaderAuth";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
-    import { kelasInput, kelasLabel, kelasTombolUtama } from "@/lib/gaya";
-    import { daftar } from "./actions";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Palette, Award, Info, Check } from "lucide-react";
+import HeaderAuth from "@/components/layout/HeaderAuth";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKirim from "@/components/ui/TombolKirim";
+import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
+import { kelasInput, kelasLabel, kelasTombolUtama } from "@/lib/gaya";
+import { daftar } from "./actions";
 
-    export const metadata = { title: "Buat Akun" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Buat Akun" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanRegister({ searchParams }) {
+export default async function HalamanRegister({ searchParams }) {
     const { galat } = await searchParams;
     const pengguna = await ambilPengguna();
-    if (pengguna) redirect(tujuanDashboard(pengguna.role, pengguna.status));
+    if (pengguna) redirect(tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active));
 
     return (
         <>
@@ -94,4 +94,4 @@
         </main>
         </>
     );
-    }
+}

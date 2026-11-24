@@ -1,18 +1,18 @@
-    import Link from "next/link";
-    import { Trash2, ShieldCheck } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { waktuRelatif } from "@/lib/format";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { abaikanLaporan, takeDownKarya } from "../actions";
+import Link from "next/link";
+import { Trash2, ShieldCheck } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { waktuRelatif } from "@/lib/format";
+import GambarKarya from "@/components/ui/GambarKarya";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { abaikanLaporan, takeDownKarya } from "../actions";
 
-    export const metadata = { title: "Moderasi Karya" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Moderasi Karya" };
+export const dynamic = "force-dynamic";
 
-    export default async function Moderasi({ searchParams }) {
+export default async function Moderasi({ searchParams }) {
     await wajibPeran(["admin"]);
     const { galat, sukses } = await searchParams;
 
@@ -78,7 +78,11 @@
                         <TombolKonfirmasi
                         aksi={abaikanLaporan}
                         nilai={{ id: k.id }}
-                        pesan="Abaikan laporan? Karya akan tetap tampil di galeri."
+                        judulDialog="Abaikan Laporan?"
+                        item={k.title}
+                        pesan="Laporan ditandai selesai dan karya tetap tampil di galeri."
+                        teksAksi="Abaikan"
+                        bahaya={false}
                         className="px-4 py-2 rounded bg-warm-cream border border-light-outline text-body-sm font-medium hover:bg-sand/30"
                         >
                         Abaikan Laporan
@@ -86,7 +90,10 @@
                         <TombolKonfirmasi
                         aksi={takeDownKarya}
                         nilai={{ id: k.id }}
-                        pesan="TINDAKAN PENTING: Jalankan Take Down? Karya akan dihapus permanen beserta like, komentar, dan entri challenge-nya."
+                        judulDialog="Take Down Karya?"
+                        item={k.title}
+                        pesan="Karya dihapus permanen beserta like, komentar, dan entri challenge-nya. Tindakan ini tidak dapat dibatalkan."
+                        teksAksi="Take Down"
                         className="px-4 py-2 rounded bg-danger text-on-danger text-body-sm font-bold hover:bg-red-700 shadow-sm flex items-center gap-1.5"
                         >
                         <Trash2 className="w-4 h-4" />
@@ -101,4 +108,4 @@
         )}
         </div>
     );
-    }
+}

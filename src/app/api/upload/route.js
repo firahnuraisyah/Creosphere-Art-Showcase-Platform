@@ -1,18 +1,18 @@
-    import { NextResponse } from "next/server";
-    import { mkdir, writeFile } from "fs/promises";
-    import path from "path";
-    import { randomUUID } from "crypto";
-    import { ambilSesi } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
+import { randomUUID } from "crypto";
+import { ambilPengguna } from "@/lib/auth";
 
-    const BATAS_UKURAN = { artworks: 5, banners: 5, avatars: 2 }; // dalam MB
+const BATAS_UKURAN = { artworks: 5, banners: 5, avatars: 2 }; // dalam MB
 
-    const PERAN_BOLEH = {
+const PERAN_BOLEH = {
     artworks: ["member", "admin"],
     avatars: ["member", "curator", "admin"],
     banners: ["curator", "admin"],
-    };
+};
 
-    function kenaliJenis(bytes) {
+function kenaliJenis(bytes) {
     if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "jpg";
     if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "png";
     if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x38) return "gif";
@@ -20,12 +20,15 @@
     const penanda = String.fromCharCode(...bytes.slice(8, 12));
     if (kepala === "RIFF" && penanda === "WEBP") return "webp";
     return null;
-    }
+}
 
-    export async function POST(request) {
-    const sesi = await ambilSesi();
+export async function POST(request) {
+    const sesi = await ambilPengguna();
     if (!sesi) {
         return NextResponse.json({ message: "Silakan masuk terlebih dahulu." }, { status: 401 });
+    }
+    if (!sesi.is_active) {
+        return NextResponse.json({ message: "Akun Anda sedang dinonaktifkan." }, { status: 403 });
     }
 
     try {
@@ -70,4 +73,4 @@
         console.error(error);
         return NextResponse.json({ message: "Gagal mengunggah gambar." }, { status: 500 });
     }
-    }
+}

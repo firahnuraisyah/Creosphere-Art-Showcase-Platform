@@ -1,19 +1,18 @@
-    import Link from "next/link";
-    import { Plus, Shapes } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { ikonKategori, kelasWarnaKategori } from "@/lib/kategori";
-    import { formatAngka } from "@/lib/format";
-    import { kelasInput } from "@/lib/gaya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { tambahKategori, ubahKategori, hapusKategori } from "../actions";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { formatAngka } from "@/lib/format";
+import { kelasInput } from "@/lib/gaya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKirim from "@/components/ui/TombolKirim";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { tambahKategori, ubahKategori, hapusKategori } from "../actions";
 
-    export const metadata = { title: "Manajemen Kategori" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Manajemen Kategori" };
+export const dynamic = "force-dynamic";
 
-    export default async function ManajemenKategori({ searchParams }) {
+export default async function ManajemenKategori({ searchParams }) {
     await wajibPeran(["admin"]);
     const { galat, sukses, tambah, edit } = await searchParams;
     const idEdit = Number(edit) || 0;
@@ -34,7 +33,7 @@
                 Kelola enam medium seni utama dan kategori &ldquo;Lainnya&rdquo; yang dilindungi sistem.
             </p>
             </div>
-            <Link href="/admin/categories?tambah=1" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors text-body-sm shadow-sm flex items-center gap-2">
+            <Link href="/admin/categories?tambah=1" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2">
             <Plus className="w-4 h-4" />
             <span>Tambah Kategori Baru</span>
             </Link>
@@ -50,7 +49,7 @@
             </div>
             <div className="flex items-center gap-3">
                 <Link href="/admin/categories" className="px-5 py-2.5 rounded border border-light-outline text-body-sm font-medium hover:bg-warm-cream">Batal</Link>
-                <TombolKirim className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] text-body-sm shadow-sm">
+                <TombolKirim className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover text-body-sm shadow-sm">
                 Simpan
                 </TombolKirim>
             </div>
@@ -75,16 +74,12 @@
                     <td colSpan={5} className="p-8 text-center text-light-on-surface-variant">Belum ada kategori. Tambahkan kategori pertama Anda.</td>
                     </tr>
                 )}
-                {daftar.map((k, i) => {
-                    const Ikon = ikonKategori(k.name);
+                {daftar.map((k) => {
                     const dipakai = k.jumlah_karya > 0;
                     if (k.is_system) {
                     return (
                         <tr key={k.id} className="bg-amber-50/50 hover:bg-amber-50">
-                        <td className="p-4 font-semibold text-light-on-surface flex items-center gap-2">
-                            <Shapes className="w-4 h-4 text-amber-700" />
-                            <span>{k.name}</span>
-                        </td>
+                        <td className="p-4 font-semibold text-light-on-surface">{k.name}</td>
                         <td className="p-4">
                             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">Wajib Sistem</span>
                         </td>
@@ -101,14 +96,11 @@
                             <form action={ubahKategori} className="flex items-center gap-2">
                             <input type="hidden" name="id" value={k.id} />
                             <input type="text" name="name" required maxLength={50} defaultValue={k.name} className={kelasInput} />
-                            <TombolKirim className="px-3 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-xs font-medium hover:bg-[#6e3522]" teksMemuat="...">Simpan</TombolKirim>
+                            <TombolKirim className="px-3 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-xs font-medium hover:bg-primary-hover" teksMemuat="...">Simpan</TombolKirim>
                             <Link href="/admin/categories" className="px-3 py-2 text-xs text-light-on-surface-variant hover:underline">Batal</Link>
                             </form>
                         ) : (
-                            <span className="flex items-center gap-2">
-                            <Ikon className={"w-4 h-4 " + kelasWarnaKategori[i % kelasWarnaKategori.length]} />
                             <span>{k.name}</span>
-                            </span>
                         )}
                         </td>
                         <td className="p-4"><span className="px-2 py-0.5 rounded text-xs bg-warm-cream">Standar</span></td>
@@ -123,7 +115,10 @@
                             <TombolKonfirmasi
                                 aksi={hapusKategori}
                                 nilai={{ id: k.id }}
-                                pesan={"Hapus kategori " + k.name + "?"}
+                                judulDialog="Hapus Kategori?"
+                                item={k.name}
+                                pesan="Kategori dihapus permanen. Hanya kategori yang belum dipakai karya yang dapat dihapus."
+                                teksAksi="Hapus"
                                 className="px-2.5 py-1 text-xs text-danger hover:underline"
                             >
                                 Hapus
@@ -140,4 +135,4 @@
         </div>
         </div>
     );
-    }
+}

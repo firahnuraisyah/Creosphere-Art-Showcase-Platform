@@ -1,22 +1,23 @@
-    import Link from "next/link";
-    import { redirect } from "next/navigation";
-    import { Hourglass, CheckCircle2, Loader, Circle, Info, Compass, RefreshCw, XCircle, Trash2, LogOut } from "lucide-react";
-    import HeaderAuth from "@/components/layout/HeaderAuth";
-    import FooterAuth from "@/components/layout/FooterAuth";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
-    import { ambilSatu } from "@/lib/query";
-    import { formatTanggal } from "@/lib/format";
-    import { hapusAkunDitolak } from "./actions";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Hourglass, CheckCircle2, Loader, Circle, Info, Compass, RefreshCw, XCircle, Trash2, LogOut } from "lucide-react";
+import HeaderAuth from "@/components/layout/HeaderAuth";
+import FooterAuth from "@/components/layout/FooterAuth";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
+import { ambilSatu } from "@/lib/query";
+import { formatTanggal } from "@/lib/format";
+import { hapusAkunDitolak } from "./actions";
 
-    export const metadata = { title: "Status Akun Curator" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Status Akun Curator" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanPendingCurator({ searchParams }) {
+export default async function HalamanPendingCurator({ searchParams }) {
     const pengguna = await ambilPengguna();
     if (!pengguna) redirect("/login");
-    if (pengguna.role !== "curator") redirect(tujuanDashboard(pengguna.role, pengguna.status));
+    if (!pengguna.is_active) redirect("/nonaktif");
+    if (pengguna.role !== "curator") redirect(tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active));
     if (pengguna.status === "approved") redirect("/curator");
 
     const { galat } = await searchParams;
@@ -59,7 +60,9 @@
                 <div className="space-y-3">
                 <TombolKonfirmasi
                     aksi={hapusAkunDitolak}
-                    pesan="Hapus akun ini secara permanen? Tindakan ini tidak dapat dibatalkan."
+                    judulDialog="Hapus Akun Saya?"
+                    pesan="Akun Curator Anda dihapus permanen dan Anda dapat mendaftar ulang. Tindakan ini tidak dapat dibatalkan."
+                    teksAksi="Hapus Akun"
                     className="w-full py-2.5 px-4 rounded-DEFAULT bg-danger text-on-danger font-medium hover:bg-red-700 transition-colors duration-state-change flex items-center justify-center gap-2"
                 >
                     <Trash2 className="w-4 h-4" />
@@ -98,7 +101,7 @@
                     <Compass className="w-4 h-4 text-olive" />
                     <span>Jelajahi Galeri</span>
                 </Link>
-                <Link href="/curator/pending" className="flex-1 py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] active:bg-[#58291a] transition-colors duration-state-change shadow-sm flex items-center justify-center gap-2">
+                <Link href="/curator/pending" className="flex-1 py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover active:bg-[#58291a] transition-colors duration-state-change shadow-sm flex items-center justify-center gap-2">
                     <RefreshCw className="w-4 h-4" />
                     <span>Periksa Status</span>
                 </Link>
@@ -109,4 +112,4 @@
         <FooterAuth />
         </div>
     );
-    }
+}

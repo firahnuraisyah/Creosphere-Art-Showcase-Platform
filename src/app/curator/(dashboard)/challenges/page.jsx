@@ -1,20 +1,20 @@
-    import Link from "next/link";
-    import { Plus, Edit3, Trophy } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { hitungStatus, sisaHari } from "@/lib/challenge";
-    import { formatTanggalPendek, formatAngka } from "@/lib/format";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import LencanaStatus from "../_komponen/LencanaStatus";
-    import { hapusChallenge } from "../actions";
+import Link from "next/link";
+import { Plus, Edit3, Trophy } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { hitungStatus, sisaHari } from "@/lib/challenge";
+import { formatTanggalPendek, formatAngka } from "@/lib/format";
+import GambarKarya from "@/components/ui/GambarKarya";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import LencanaStatus from "../_komponen/LencanaStatus";
+import { hapusChallenge } from "../actions";
 
-    export const metadata = { title: "Challenge Saya" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Challenge Saya" };
+export const dynamic = "force-dynamic";
 
-    export default async function ChallengeSaya({ searchParams }) {
+export default async function ChallengeSaya({ searchParams }) {
     const pengguna = await wajibPeran(["curator"], { harusDisetujui: true });
     const { galat, sukses } = await searchParams;
 
@@ -36,7 +36,7 @@
                 Pantau status challenge, lihat karya yang masuk, dan pilih hingga 3 pemenang setelah challenge selesai.
             </p>
             </div>
-            <Link href="/curator/challenges/new" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors text-body-sm shadow-sm flex items-center gap-2">
+            <Link href="/curator/challenges/new" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2">
             <Plus className="w-4 h-4" />
             <span>Buat Challenge Baru</span>
             </Link>
@@ -109,7 +109,10 @@
                             <TombolKonfirmasi
                                 aksi={hapusChallenge}
                                 nilai={{ id: c.id }}
-                                pesan="Hapus challenge ini? Semua submisi dan pemenangnya ikut terhapus."
+                                judulDialog="Hapus Challenge?"
+                                item={c.title}
+                                pesan="Challenge dihapus permanen beserta semua submisi dan pemenangnya. Tindakan ini tidak dapat dibatalkan."
+                                teksAksi="Hapus"
                                 className="px-2 py-1.5 text-xs text-danger hover:bg-rose-50 rounded"
                                 judul="Hapus challenge"
                             >
@@ -127,4 +130,4 @@
         )}
         </div>
     );
-    }
+}
