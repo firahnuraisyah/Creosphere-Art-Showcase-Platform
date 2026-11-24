@@ -1,51 +1,62 @@
-    import Link from "next/link";
-    import { Search, Plus, ChevronDown, LayoutDashboard, User, Bookmark, Settings, LogOut } from "lucide-react";
-    import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
-    import { inisial } from "@/lib/format";
-    import Logo from "@/components/layout/Logo";
-    import NavTautan from "@/components/layout/NavTautan";
+import Link from "next/link";
+import { Search, Plus, ChevronDown, LayoutDashboard, User, Bookmark, LogOut } from "lucide-react";
+import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
+import { inisial } from "@/lib/format";
+import Logo from "@/components/layout/Logo";
+import NavTautan from "@/components/layout/NavTautan";
 
-    const daftarMenu = [
+const daftarMenu = [
     { href: "/", label: "Beranda" },
-    { href: "/artworks", label: "Jelajahi Karya" },
-    { href: "/artists", label: "Seniman" },
+    { href: "/artworks", label: "Jelajahi" },
+    { href: "/artists", label: "Komunitas", juga: ["/curators"] },
     { href: "/challenges", label: "Challenge" },
-    ];
+];
 
-    export default async function NavbarPublik() {
+export default async function NavbarPublik() {
     const pengguna = await ambilPengguna();
-    const dashboard = pengguna ? tujuanDashboard(pengguna.role, pengguna.status) : null;
+    const dashboard = pengguna ? tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active) : null;
     const labelPeran = { member: "Seniman Member", curator: "Curator", admin: "Admin" };
 
     return (
-        <header className="sticky top-0 z-40 bg-light-surface/95 backdrop-blur-md border-b border-light-outline-variant">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
+        <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-8">
             <Logo />
-
-            <nav className="hidden md:flex items-center gap-8" aria-label="Navigasi utama">
-            <NavTautan daftar={daftarMenu} />
+            <nav className="hidden md:flex items-center gap-6" aria-label="Navigasi utama">
+                <NavTautan daftar={daftarMenu} />
             </nav>
+            </div>
 
             <div className="flex items-center gap-3">
+            {/* Pencarian global: GET ke /search?q=... (tanpa JavaScript) */}
+            <form action="/search" method="GET" role="search" className="relative hidden lg:flex items-center w-64">
+                <label htmlFor="cari-navbar" className="sr-only">Cari karya, seniman, kategori, atau challenge</label>
+                <Search className="w-[18px] h-[18px] text-outline absolute left-3 pointer-events-none" aria-hidden="true" />
+                <input
+                id="cari-navbar" type="search" name="q" maxLength={100}
+                placeholder="Cari karya, seniman, challenge..."
+                className="w-full h-10 pl-9 pr-3 rounded bg-surface-container-low border border-border-input text-body-sm text-on-surface placeholder:text-outline focus:bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container focus:outline-none transition-colors duration-state-change"
+                />
+            </form>
             <Link
-                href="/artworks"
-                className="p-2 text-light-on-surface-variant hover:text-light-on-surface hover:bg-warm-cream rounded-full transition-colors"
-                aria-label="Cari karya"
+                href="/search"
+                className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded text-on-surface-variant hover:bg-surface-container transition-colors duration-state-change"
+                aria-label="Cari"
             >
                 <Search className="w-5 h-5" />
             </Link>
 
             {!pengguna && (
                 <>
-                <Link href="/login" className="px-4 py-2 text-label-lg font-medium text-light-on-surface hover:text-light-primary transition-colors">
+                <Link href="/login" className="hidden sm:inline-flex items-center justify-center h-10 px-3 rounded font-label text-label-lg text-on-surface-variant hover:bg-surface-container transition-colors duration-state-change">
                     Masuk
                 </Link>
                 <Link
                     href="/register"
-                    className="px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-[#6e3522] transition-colors shadow-sm"
+                    className="inline-flex items-center justify-center h-10 px-4 rounded bg-primary text-on-primary font-label text-label-lg hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors duration-state-change"
                 >
                     <span className="sm:hidden">Gabung</span>
-                    <span className="hidden sm:inline">Gabung Creosphere</span>
+                    <span className="hidden sm:inline">Gabung Sekarang</span>
                 </Link>
                 </>
             )}
@@ -55,10 +66,10 @@
                 {pengguna.role === "member" && (
                     <Link
                     href="/member/artworks/new"
-                    className="hidden sm:inline-flex px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-[#6e3522] transition-colors shadow-sm items-center gap-1.5"
+                    className="hidden sm:inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded bg-primary text-on-primary font-label text-label-lg hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors duration-state-change"
                     >
                     <Plus className="w-4 h-4" />
-                    <span>Unggah</span>
+                    <span>Unggah Karya</span>
                     </Link>
                 )}
 
@@ -95,11 +106,13 @@
                             <Bookmark className="w-4 h-4 text-light-on-surface-variant" />
                             Favorit Saya
                         </Link>
-                        <Link href="/member/account" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Settings className="w-4 h-4 text-light-on-surface-variant" />
-                            Pengaturan Akun
-                        </Link>
                         </>
+                    )}
+                    {pengguna.role === "curator" && pengguna.status === "approved" && (
+                        <Link href={"/curators/" + pengguna.id} className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
+                        <User className="w-4 h-4 text-light-on-surface-variant" />
+                        Profil Publik Saya
+                        </Link>
                     )}
                     <form action="/api/logout" method="POST" className="border-t border-light-outline-variant mt-2 pt-2">
                         <button type="submit" className="w-full flex items-center gap-2.5 px-4 py-2 text-body-sm text-danger hover:bg-rose-50">
@@ -114,11 +127,11 @@
             </div>
         </div>
 
-        <nav className="md:hidden border-t border-light-outline-variant" aria-label="Navigasi utama (ponsel)">
-            <div className="max-w-7xl mx-auto px-6 py-2 flex items-center gap-6 overflow-x-auto scrollbar-none">
+        <nav className="md:hidden border-t border-outline-variant" aria-label="Navigasi utama (ponsel)">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-6 overflow-x-auto scrollbar-none">
             <NavTautan daftar={daftarMenu} mobile />
             </div>
         </nav>
         </header>
     );
-    }
+}
