@@ -1,10 +1,11 @@
-    import SidebarDashboard from "@/components/layout/SidebarDashboard";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu } from "@/lib/query";
+import SidebarDashboard from "@/components/layout/SidebarDashboard";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu } from "@/lib/query";
 
-    export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
-    export default async function LayoutAdmin({ children }) {
+// Kerangka Dashboard Admin
+export default async function LayoutAdmin({ children }) {
     const pengguna = await wajibPeran(["admin"]);
 
     const angka = await ambilSatu(
@@ -19,4 +20,4 @@
         {children}
         </SidebarDashboard>
     );
-    }
+}
