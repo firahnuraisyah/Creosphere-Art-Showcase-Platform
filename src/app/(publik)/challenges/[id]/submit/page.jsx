@@ -1,21 +1,22 @@
-    import Link from "next/link";
-    import { notFound } from "next/navigation";
-    import { Calendar, Check, CheckCircle2 } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak, ambilSatu } from "@/lib/query";
-    import { ubahKeId } from "@/lib/validasi";
-    import { hitungStatus, sisaHari } from "@/lib/challenge";
-    import { formatTanggal } from "@/lib/format";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import { kirimSubmisi } from "./actions";
+import TombolKembali from "@/components/layout/TombolKembali";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Calendar, Check, CheckCircle2 } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { ubahKeId } from "@/lib/validasi";
+import { hitungStatus, sisaHari } from "@/lib/challenge";
+import { formatTanggal } from "@/lib/format";
+import GambarKarya from "@/components/ui/GambarKarya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import TombolKirim from "@/components/ui/TombolKirim";
+import { kirimSubmisi } from "./actions";
 
-    export const metadata = { title: "Ikuti Challenge" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Ikuti Challenge" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanSubmisiChallenge({ params, searchParams }) {
+export default async function HalamanSubmisiChallenge({ params, searchParams }) {
     const pengguna = await wajibPeran(["member"]);
     const { id } = await params;
     const { galat, sukses } = await searchParams;
@@ -63,6 +64,7 @@
 
     return (
         <main className="max-w-3xl mx-auto px-6 py-10 space-y-8 w-full">
+        <TombolKembali bawaan={{ href: "/challenges/" + idChallenge, label: "Challenge" }} />
         <div className="space-y-2">
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-light-secondary-container text-light-on-secondary-container border border-olive/20">
             Submisi Challenge
@@ -152,7 +154,7 @@
                 </Link>
                 <TombolKirim
                 teksMemuat="Mengirim..."
-                className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors shadow-sm text-body-sm flex items-center gap-2"
+                className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors shadow-sm text-body-sm flex items-center gap-2"
                 >
                 <Check className="w-4 h-4" />
                 <span>Konfirmasi Submisi Challenge</span>
@@ -162,4 +164,4 @@
         )}
         </main>
     );
-    }
+}
