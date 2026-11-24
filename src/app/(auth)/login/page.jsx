@@ -1,17 +1,17 @@
-    import Link from "next/link";
-    import { redirect } from "next/navigation";
-    import HeaderAuth from "@/components/layout/HeaderAuth";
-    import FormLogin from "@/components/auth/FormLogin";
-    import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import HeaderAuth from "@/components/layout/HeaderAuth";
+import FormLogin from "@/components/auth/FormLogin";
+import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 
-    export const metadata = { title: "Masuk" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Masuk" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanLogin({ searchParams }) {
+export default async function HalamanLogin({ searchParams }) {
     const { next, sukses } = await searchParams;
 
     const pengguna = await ambilPengguna();
-    if (pengguna) redirect(tujuanDashboard(pengguna.role, pengguna.status));
+    if (pengguna) redirect(tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active));
 
     return (
         <>
@@ -33,15 +33,13 @@
             </div>
             <FormLogin next={typeof next === "string" ? next : ""} pesanAwal={typeof sukses === "string" ? sukses : ""} />
             <div className="mt-8 pt-6 border-t border-light-outline-variant text-center">
-                <p className="text-label-sm text-light-on-surface-variant uppercase tracking-wider mb-2">Akses Cepat Evaluasi</p>
-                <div className="flex flex-wrap justify-center gap-2 text-xs text-light-on-surface-variant">
-                <Link href="/member" className="px-2.5 py-1 rounded bg-warm-cream hover:bg-sand/40 border border-light-outline transition-colors">Member</Link>
-                <Link href="/curator" className="px-2.5 py-1 rounded bg-warm-cream hover:bg-sand/40 border border-light-outline transition-colors">Curator</Link>
-                <Link href="/admin" className="px-2.5 py-1 rounded bg-warm-cream hover:bg-sand/40 border border-light-outline transition-colors">Admin</Link>
-                </div>
+                <p className="text-body-sm text-light-on-surface-variant">
+                Ingin melihat-lihat dulu?{" "}
+                <Link href="/" className="text-light-primary font-medium hover:underline">Masuk sebagai tamu (Guest)</Link>
+                </p>
             </div>
             </div>
         </main>
         </>
     );
-    }
+}

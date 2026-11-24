@@ -1,38 +1,39 @@
-    import Link from "next/link";
-    import { notFound } from "next/navigation";
-    import { Calendar, Eye, ArrowUpRight, ChevronRight, Heart, Bookmark, Trash2 } from "lucide-react";
-    import Avatar from "@/components/ui/Avatar";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import ModalLapor from "@/components/karya/ModalLapor";
-    import { ambilBanyak, ambilSatu } from "@/lib/query";
-    import { ambilPengguna } from "@/lib/auth";
-    import { ubahKeId } from "@/lib/validasi";
-    import { formatTanggal, formatAngka, waktuRelatif } from "@/lib/format";
-    import { toggleSuka, toggleFavorit, tambahKomentar, hapusKomentar, laporKarya } from "./actions";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Calendar, ChevronRight, Heart, Bookmark, Trash2 } from "lucide-react";
+import Avatar from "@/components/ui/Avatar";
+import TombolKembali from "@/components/layout/TombolKembali";
+import GambarKarya from "@/components/ui/GambarKarya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKirim from "@/components/ui/TombolKirim";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import ModalLapor from "@/components/karya/ModalLapor";
+import PencatatTayang from "@/components/karya/PencatatTayang";
+import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { ambilPengguna } from "@/lib/auth";
+import { ubahKeId } from "@/lib/validasi";
+import { formatTanggal, waktuRelatif } from "@/lib/format";
+import { toggleSuka, toggleFavorit, tambahKomentar, hapusKomentar, laporKarya } from "./actions";
 
-    export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
-    export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
     const { id } = await params;
     const idAngka = ubahKeId(id);
     const karya = idAngka ? await ambilSatu("SELECT title FROM artworks WHERE id = $1", [idAngka]) : null;
     return { title: karya ? karya.title : "Karya" };
-    }
+}
 
-    export default async function DetailKarya({ params, searchParams }) {
+export default async function DetailKarya({ params, searchParams }) {
     const { id } = await params;
     const { galat, sukses } = await searchParams;
     const idKarya = ubahKeId(id);
     if (!idKarya) notFound();
 
-    await ambilBanyak("UPDATE artworks SET view_count = view_count + 1 WHERE id = $1", [idKarya]);
     const karya = await ambilSatu(
         `SELECT a.id, a.title, a.description, a.artwork_type, a.file_url, a.view_count, a.created_at, a.user_id,
                 c.name AS kategori, c.is_system,
-                u.display_name AS artis, u.avatar_url, u.headline, u.bio
+                u.display_name AS artis, u.is_active AS artis_aktif, u.avatar_url, u.headline, u.bio
         FROM artworks a
         JOIN users u ON u.id = a.user_id
         JOIN categories c ON c.id = a.category_id
@@ -68,10 +69,11 @@
 
     const adalahMember = pengguna && pengguna.role === "member";
     const jenis = karya.is_system && karya.artwork_type ? karya.artwork_type : null;
-    const warna = ["bg-light-primary-container text-light-on-primary-container", "bg-light-secondary-container text-light-on-secondary-container", "bg-warm-cream text-light-on-surface", "bg-sand/40 text-light-on-surface"];
 
     return (
         <main className="max-w-7xl mx-auto px-6 py-10 w-full">
+        <PencatatTayang idKarya={karya.id} />
+        <div className="mb-6"><TombolKembali bawaan={{ href: "/artworks", label: "Jelajahi" }} /></div>
         <div className="mb-6"><Pemberitahuan galat={galat} sukses={sukses} /></div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <div className="lg:col-span-8 space-y-4">
@@ -81,9 +83,6 @@
             <div className="flex items-center justify-between text-body-sm text-light-on-surface-variant px-2">
                 <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" /> Dipublikasikan {formatTanggal(karya.created_at)}
-                </span>
-                <span className="flex items-center gap-1.5">
-                <Eye className="w-4 h-4" /> {formatAngka(karya.view_count)} tayangan
                 </span>
             </div>
             </div>
@@ -109,14 +108,14 @@
                     <span className="text-label-sm uppercase tracking-wider text-light-on-surface-variant block mb-2 font-medium">Tag</span>
                     <div className="flex flex-wrap gap-1.5">
                     {tag.map((t) => (
-                        <Link key={t.name} href={"/artworks?q=" + encodeURIComponent(t.name)} className="px-2.5 py-1 rounded bg-warm-cream hover:bg-sand/30 text-xs text-light-on-surface transition-colors">
+                        <Link key={t.name} href={"/search?q=" + encodeURIComponent(t.name)} className="px-2.5 py-1 rounded bg-warm-cream hover:bg-sand/30 text-xs text-light-on-surface transition-colors">
                         #{t.name}
                         </Link>
                     ))}
                     </div>
                 </div>
                 )}
-                {/* Aksi interaksi: suka, favorit, laporkan */}
+                
                 <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-light-outline-variant">
                 <form action={toggleSuka}>
                     <input type="hidden" name="artwork_id" value={karya.id} />
@@ -139,16 +138,15 @@
                 <Avatar nama={karya.artis} src={karya.avatar_url} ukuran="w-14 h-14" teks="text-lg" />
                 <div>
                     <h3 className="font-headline text-title-lg font-bold text-light-on-surface">
-                    <Link href={"/artists/" + karya.user_id} className="hover:text-light-primary transition-colors">{karya.artis}</Link>
+                    <Link href={"/artists/" + karya.user_id} className="hover:underline underline-offset-4">{karya.artis}</Link>
                     </h3>
+                    {!karya.artis_aktif && (
+                    <span className="inline-flex mb-1 px-2 py-0.5 rounded-full bg-slate-900 text-white text-label-sm font-medium">Akun nonaktif</span>
+                    )}
                     {karya.headline && <p className="text-body-sm text-light-on-surface-variant">{karya.headline}</p>}
                 </div>
                 </div>
-                {karya.bio && <p className="text-body-sm text-light-on-surface-variant mb-4 line-clamp-4">{karya.bio}</p>}
-                <Link href={"/artists/" + karya.user_id} className="w-full py-2 px-4 rounded-DEFAULT bg-warm-cream hover:bg-sand/30 border border-light-outline text-body-sm font-medium text-light-on-surface flex items-center justify-center gap-1.5 transition-colors">
-                <span>Lihat Portofolio Seniman</span>
-                <ArrowUpRight className="w-4 h-4" />
-                </Link>
+                {karya.bio && <p className="text-body-sm text-light-on-surface-variant line-clamp-4">{karya.bio}</p>}
             </div>
 
             {challenge && (
@@ -177,7 +175,7 @@
                 <textarea name="body" rows={3} required maxLength={500} placeholder={"Tulis komentar yang membangun atau apresiasi untuk " + karya.artis + "..."} className="w-full p-3 rounded-DEFAULT bg-light-background border border-light-outline text-body-md text-light-on-surface placeholder:text-light-on-surface-variant/50 focus:border-light-primary focus:ring-1 focus:ring-light-primary" />
                 <div className="flex items-center justify-between pt-1">
                 <span className="text-xs text-light-on-surface-variant">Masuk sebagai <strong>{pengguna.display_name}</strong></span>
-                <TombolKirim className="px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-[#6e3522] transition-colors inline-flex items-center gap-2" teksMemuat="Mengirim...">
+                <TombolKirim className="px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-label-lg font-medium hover:bg-primary-hover transition-colors inline-flex items-center gap-2" teksMemuat="Mengirim...">
                     Kirim Komentar
                 </TombolKirim>
                 </div>
@@ -205,7 +203,7 @@
                     </div>
                     </div>
                     {pengguna && pengguna.id === k.user_id && (
-                    <TombolKonfirmasi aksi={hapusKomentar} nilai={{ artwork_id: karya.id, comment_id: k.id }} pesan="Hapus komentar ini?" judul="Hapus komentar" className="text-light-on-surface-variant hover:text-danger p-1">
+                    <TombolKonfirmasi aksi={hapusKomentar} nilai={{ artwork_id: karya.id, comment_id: k.id }} judulDialog="Hapus Komentar?" item={k.body.length > 80 ? k.body.slice(0, 80) + "…" : k.body} pesan="Komentar dihapus permanen." teksAksi="Hapus" judul="Hapus komentar" className="text-light-on-surface-variant hover:text-danger p-1">
                         <Trash2 className="w-4 h-4" />
                     </TombolKonfirmasi>
                     )}
@@ -217,4 +215,4 @@
         </section>
         </main>
     );
-    }
+}
