@@ -1,43 +1,41 @@
-    import Link from "next/link";
-    import { notFound } from "next/navigation";
-    import { Award, Globe, PlusCircle, Trophy } from "lucide-react";
-    import Avatar from "@/components/ui/Avatar";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import { ambilBanyak, ambilSatu } from "@/lib/query";
-    import { ambilPengguna } from "@/lib/auth";
-    import { ubahKeId } from "@/lib/validasi";
-    import { hitungStatus, labelStatus } from "@/lib/challenge";
-    import { formatTanggal, formatAngka } from "@/lib/format";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Award, Globe, PlusCircle, Trophy } from "lucide-react";
+import Avatar from "@/components/ui/Avatar";
+import GambarKarya from "@/components/ui/GambarKarya";
+import KartuPotret from "@/components/ui/KartuPotret";
+import TombolKembali from "@/components/layout/TombolKembali";
+import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { ambilPengguna } from "@/lib/auth";
+import { ubahKeId } from "@/lib/validasi";
+import { hitungStatus, labelStatus } from "@/lib/challenge";
+import { formatTanggal, formatAngka } from "@/lib/format";
 
-    export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
-    export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
     const { id } = await params;
     const idAngka = ubahKeId(id);
     const c = idAngka ? await ambilSatu("SELECT title FROM challenges WHERE id = $1", [idAngka]) : null;
     return { title: c ? c.title : "Challenge" };
-    }
+}
 
-    const kelasLencana = {
+const kelasLencana = {
     aktif: "bg-emerald-500/90 text-white",
     belum_mulai: "bg-sky-500/90 text-white",
     berakhir: "bg-amber-500/90 text-white",
-    };
-    const labelLencana = { aktif: "Challenge Aktif", belum_mulai: "Segera Hadir", berakhir: "Challenge Selesai" };
-    const kelasJuara = {
-    1: "border-2 border-amber-300",
-    2: "border border-slate-300",
-    3: "border border-amber-200",
-    };
+};
+const labelLencana = { aktif: "Challenge Aktif", belum_mulai: "Segera Hadir", berakhir: "Challenge Selesai" };
+const medali = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
-    export default async function DetailChallenge({ params }) {
+export default async function DetailChallenge({ params }) {
     const { id } = await params;
     const idChallenge = ubahKeId(id);
     if (!idChallenge) notFound();
 
     const c = await ambilSatu(
         `SELECT ch.id, ch.title, ch.tagline, ch.description, ch.rules, ch.prize, ch.banner_url, ch.start_date, ch.end_date,
-                u.display_name AS curator, u.avatar_url AS curator_avatar, u.affiliation, u.specialization, u.bio AS curator_bio
+                ch.curator_id, u.display_name AS curator, u.avatar_url AS curator_avatar, u.affiliation, u.specialization, u.bio AS curator_bio
         FROM challenges ch JOIN users u ON u.id = ch.curator_id WHERE ch.id = $1`,
         [idChallenge]
     );
@@ -52,13 +50,14 @@
         [idChallenge]
     );
     const submisi = await ambilBanyak(
-        `SELECT s.id, a.id AS artwork_id, a.title, a.file_url, u.display_name AS artis
+        `SELECT s.id, a.id AS artwork_id, a.title, a.file_url, u.display_name AS artis, u.is_active
         FROM submissions s JOIN artworks a ON a.id = s.artwork_id JOIN users u ON u.id = s.user_id
-        WHERE s.challenge_id = $1 ORDER BY s.created_at DESC`,
+        WHERE s.challenge_id = $1 ORDER BY a.created_at DESC`,
         [idChallenge]
     );
     const pemenang = await ambilBanyak(
-        `SELECT w.rank, w.curator_note, a.id AS artwork_id, a.title, a.file_url, u.display_name AS artis
+        `SELECT w.rank, w.curator_note, a.id AS artwork_id, a.title, a.file_url, u.display_name AS artis, u.is_active,
+                (SELECT COUNT(*) FROM likes l WHERE l.artwork_id = a.id) AS jumlah_like
         FROM winners w JOIN submissions s ON s.id = w.submission_id
         JOIN artworks a ON a.id = s.artwork_id JOIN users u ON u.id = s.user_id
         WHERE w.challenge_id = $1 ORDER BY w.rank ASC`,
@@ -71,6 +70,7 @@
 
     return (
         <main className="max-w-7xl mx-auto px-6 py-10 space-y-12 w-full">
+        <TombolKembali bawaan={{ href: "/challenges", label: "Challenge" }} />
         <div className="bg-light-surface rounded-xl border border-light-outline-variant overflow-hidden shadow-sm">
             <div className="aspect-[16/6] bg-warm-cream relative overflow-hidden">
             <GambarKarya src={c.banner_url || "/images/placeholder-banner.svg"} alt={"Banner " + c.title} className="w-full h-full object-cover" />
@@ -127,17 +127,23 @@
                 <h2 className="font-headline text-title-lg font-bold text-light-on-surface flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-amber-600" /> Para Pemenang
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8">
                     {pemenang.map((p) => (
-                    <Link key={p.rank} href={"/artworks/" + p.artwork_id} className={"group bg-light-surface rounded-md p-3 shadow-sm block " + kelasJuara[p.rank]}>
-                        <div className="aspect-[4/3] bg-warm-cream rounded overflow-hidden mb-2">
-                        <GambarKarya src={p.file_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300" />
-                        </div>
-                        <span className="text-xs font-semibold text-amber-700">Juara {p.rank}</span>
-                        <h4 className="font-headline text-title-md font-semibold text-light-on-surface truncate">{p.title}</h4>
-                        <span className="text-xs text-light-on-surface-variant block">{p.artis}</span>
-                        {p.curator_note && <p className="text-xs text-light-on-surface-variant mt-2 italic line-clamp-3">&ldquo;{p.curator_note}&rdquo;</p>}
-                    </Link>
+                    <KartuPotret
+                        key={p.rank}
+                        href={"/artworks/" + p.artwork_id}
+                        src={p.file_url}
+                        alt={p.title + " oleh " + p.artis}
+                        label={<>{medali[p.rank]} Juara {p.rank}</>}
+                        nonaktif={!p.is_active}
+                    >
+                        <span className="font-label text-label-md text-outline truncate max-w-full">{p.artis}</span>
+                        <span className="font-title text-title-md text-on-surface truncate max-w-full">{p.title}</span>
+                        <span className="font-body text-body-sm text-on-surface-variant tabular-nums">
+                        {Number(p.jumlah_like) > 0 ? "disukai oleh " + formatAngka(p.jumlah_like) + " orang" : "belum ada yang menyukai"}
+                        </span>
+                        {p.curator_note && <span className="text-xs text-on-surface-variant mt-1 italic line-clamp-3">&ldquo;{p.curator_note}&rdquo;</span>}
+                    </KartuPotret>
                     ))}
                 </div>
                 </section>
@@ -160,7 +166,9 @@
                 <div className="flex items-center gap-3.5">
                 <Avatar nama={c.curator} src={c.curator_avatar} ukuran="w-12 h-12" teks="font-headline text-lg font-bold" indeksWarna={1} />
                 <div>
-                    <h3 className="font-headline text-title-md font-bold text-light-on-surface">{c.curator}</h3>
+                    <h3 className="font-headline text-title-md font-bold text-light-on-surface">
+                    <Link href={"/curators/" + c.curator_id} className="hover:underline">{c.curator}</Link>
+                    </h3>
                     {(c.affiliation || c.specialization) && <p className="text-body-sm text-light-on-surface-variant">{c.affiliation || c.specialization}</p>}
                 </div>
                 </div>
@@ -174,7 +182,7 @@
                 <div className="bg-light-primary-container/30 border border-light-primary/20 rounded-xl p-6 text-center space-y-3">
                 <h4 className="font-headline text-title-lg font-bold text-light-on-surface">Siap berpartisipasi?</h4>
                 <p className="text-body-sm text-light-on-surface-variant">Kirim karya dari portofolio Creosphere Anda sebelum batas waktu.</p>
-                <Link href={"/challenges/" + c.id + "/submit"} className="w-full py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors flex items-center justify-center gap-2 text-body-sm shadow-sm">
+                <Link href={"/challenges/" + c.id + "/submit"} className="w-full py-2.5 px-4 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 text-body-sm shadow-sm">
                     <span>Ikuti Challenge</span>
                     <PlusCircle className="w-4 h-4" />
                 </Link>
@@ -195,19 +203,15 @@
                 Belum ada karya yang dikirim ke challenge ini.
             </div>
             ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-8">
                 {submisi.map((s) => (
-                <Link key={s.id} href={"/artworks/" + s.artwork_id} className="bg-light-surface rounded-md border border-light-outline-variant overflow-hidden p-3 group block">
-                    <div className="aspect-[4/3] bg-warm-cream rounded overflow-hidden mb-2">
-                    <GambarKarya src={s.file_url} alt={s.title} className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300" />
-                    </div>
-                    <h4 className="font-headline text-title-md font-semibold text-light-on-surface truncate">{s.title}</h4>
-                    <span className="text-xs text-light-on-surface-variant block">{s.artis}</span>
-                </Link>
+                <KartuPotret key={s.id} href={"/artworks/" + s.artwork_id} src={s.file_url} alt={s.title + " oleh " + s.artis} nonaktif={!s.is_active}>
+                    <span className="font-title text-title-md text-on-surface truncate max-w-full">{s.title}</span>
+                </KartuPotret>
                 ))}
             </div>
             )}
         </section>
         </main>
     );
-    }
+}
