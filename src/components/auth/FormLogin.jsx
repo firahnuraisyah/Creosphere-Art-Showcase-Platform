@@ -1,12 +1,12 @@
-    "use client";
+"use client";
 
-    import { useState } from "react";
-    import { useRouter } from "next/navigation";
-    import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import { kelasLabel, kelasInputIkon, kelasTombolUtama } from "@/lib/gaya";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import { kelasLabel, kelasInputIkon, kelasTombolUtama } from "@/lib/gaya";
 
-    export default function FormLogin({ next, pesanAwal }) {
+export default function FormLogin({ next, pesanAwal }) {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -56,14 +56,9 @@
             </div>
         </div>
         <div>
-            <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="password" className="block text-label-lg text-light-on-surface font-medium">
-                Kata Sandi <span className="text-danger">*</span>
+            <label htmlFor="password" className="block text-label-lg text-light-on-surface font-medium mb-1.5">
+            Kata Sandi <span className="text-danger">*</span>
             </label>
-            <a href="/forgot-password" className="text-body-sm text-light-primary hover:underline">
-                Lupa kata sandi?
-            </a>
-            </div>
             <div className="relative">
             <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-light-on-surface-variant">
                 <Lock className="w-4 h-4" />
@@ -97,4 +92,4 @@
         </button>
         </form>
     );
-    }
+}
