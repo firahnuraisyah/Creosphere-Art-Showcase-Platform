@@ -1,52 +1,42 @@
-    import Link from "next/link";
-    import { Plus, Eye, Edit3, Trash2, Palette } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak, ambilSatu } from "@/lib/query";
-    import { formatAngka, formatTanggalPendek } from "@/lib/format";
-    import { ubahKeId } from "@/lib/validasi";
-    import GambarKarya from "@/components/ui/GambarKarya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import KeadaanKosong from "@/components/ui/KeadaanKosong";
-    import Paginasi from "@/components/ui/Paginasi";
-    import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
-    import { hapusKarya } from "./actions";
+import Link from "next/link";
+import { Plus, Eye, Edit3, Trash2, Palette } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { formatAngka, formatTanggalPendek } from "@/lib/format";
+import GambarKarya from "@/components/ui/GambarKarya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { hapusKarya } from "./actions";
 
-    export const metadata = { title: "Karya Saya" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Karya Saya" };
+export const dynamic = "force-dynamic";
 
-    const PER_HALAMAN = 10;
-
-    export default async function HalamanKaryaSaya({ searchParams }) {
+export default async function HalamanKaryaSaya({ searchParams }) {
     const pengguna = await wajibPeran(["member"]);
-    const { galat, sukses, page } = await searchParams;
-
-    const hitung = await ambilSatu("SELECT COUNT(*) AS jumlah FROM artworks WHERE user_id = $1", [pengguna.id]);
-    const total = hitung?.jumlah ?? 0;
-    const totalHalaman = Math.max(1, Math.ceil(total / PER_HALAMAN));
-    const halaman = Math.min(ubahKeId(page) || 1, totalHalaman);
+    const { galat, sukses } = await searchParams;
 
     const karya = await ambilBanyak(
         `SELECT a.id, a.title, a.artwork_type, a.file_url, a.created_at, c.name AS kategori, c.is_system,
                 (SELECT COUNT(*) FROM likes l WHERE l.artwork_id = a.id) AS jumlah_like
         FROM artworks a JOIN categories c ON c.id = a.category_id
         WHERE a.user_id = $1
-        ORDER BY a.created_at DESC
-        LIMIT $2 OFFSET $3`,
-        [pengguna.id, PER_HALAMAN, (halaman - 1) * PER_HALAMAN]
+        ORDER BY a.created_at DESC`,
+        [pengguna.id]
     );
 
     return (
         <div className="max-w-7xl space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-light-outline-variant">
             <div>
-            <h1 className="font-headline text-headline-lg text-light-on-surface">Karya Saya ({formatAngka(total)})</h1>
+            <h1 className="font-headline text-headline-lg text-light-on-surface">Karya Saya ({formatAngka(karya.length)})</h1>
             <p className="text-body-md text-light-on-surface-variant">
                 Kelola karya yang Anda unggah, ubah deskripsi dan tag, atau terbitkan karya baru.
             </p>
             </div>
             <Link
             href="/member/artworks/new"
-            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-[#6e3522] transition-colors flex items-center gap-2 text-body-sm shadow-sm"
+            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors flex items-center gap-2 text-body-sm shadow-sm"
             >
             <Plus className="w-4 h-4" />
             <span>Tambah Karya Baru</span>
@@ -109,7 +99,10 @@
                             <TombolKonfirmasi
                             aksi={hapusKarya}
                             nilai={{ id: item.id }}
-                            pesan="Yakin ingin menghapus karya ini? Tindakan ini tidak dapat dibatalkan."
+                            judulDialog="Hapus Karya?"
+                            item={item.title}
+                            pesan="Karya dihapus permanen beserta like, komentar, dan keikutsertaannya di challenge. Tindakan ini tidak dapat dibatalkan."
+                            teksAksi="Hapus"
                             judul="Hapus Karya"
                             className="p-2 text-danger hover:bg-rose-50 rounded"
                             >
@@ -125,7 +118,6 @@
             </div>
         )}
 
-        <Paginasi halaman={halaman} totalHalaman={totalHalaman} total={total} perHalaman={PER_HALAMAN} path="/member/artworks" />
         </div>
     );
-    }
+}
