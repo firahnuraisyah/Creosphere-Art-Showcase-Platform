@@ -1,12 +1,16 @@
-    "use server";
+"use server";
 
-    import { revalidatePath } from "next/cache";
-    import pool from "@/lib/db";
-    import { wajibPeran } from "@/lib/auth";
-    import { kembaliGalat, kembaliSukses } from "@/lib/arah";
-    import { bacaTeks, cekWajib, cekPanjang, cekUrlUnggahan, bersihkanTag, ubahKeId } from "@/lib/validasi";
+import { revalidatePath } from "next/cache";
+import pool from "@/lib/db";
+import { ambilBanyak } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { hapusFileLama } from "@/lib/berkas";
+import { wajibPeran } from "@/lib/auth";
+import { kembaliGalat, kembaliSukses } from "@/lib/arah";
+import { bacaTeks, cekWajib, cekPanjang, cekUrlUnggahan, bersihkanTag, ubahKeId } from "@/lib/validasi";
 
-    async function periksaIsian(formData) {
+// Validasi isian karya yang sama untuk unggah dan edit. 
+async function periksaIsian(formData) {
     const judul = bacaTeks(formData, "title");
     const deskripsi = bacaTeks(formData, "description");
     const idKategori = ubahKeId(bacaTeks(formData, "category_id"));
@@ -29,9 +33,10 @@
         return { galat: "Kategori Lainnya mewajibkan Anda menyebutkan jenis karya." };
     }
     return { data: { judul, deskripsi, idKategori, jenis: jenis || null, tag } };
-    }
+}
 
-    async function simpanTag(klien, idKarya, daftarTag) {
+// Menyimpan tag karya (hapus yang lama, tambah yang baru). 
+async function simpanTag(klien, idKarya, daftarTag) {
     await klien.query("DELETE FROM artwork_tags WHERE artwork_id = $1", [idKarya]);
     for (const nama of daftarTag) {
         const tagBaris = await klien.query(
@@ -43,9 +48,9 @@
         tagBaris.rows[0].id,
         ]);
     }
-    }
+}
 
-    export async function unggahKarya(formData) {
+export async function unggahKarya(formData) {
     const pengguna = await wajibPeran(["member"]);
     const kembali = "/member/artworks/new";
 
@@ -88,14 +93,15 @@
     revalidatePath("/member/artworks");
     revalidatePath("/artworks");
     kembaliSukses("/member/artworks", "Karya berhasil diterbitkan.");
-    }
+}
 
-    export async function ubahKarya(formData) {
+export async function ubahKarya(formData) {
     const pengguna = await wajibPeran(["member"]);
     const idKarya = ubahKeId(bacaTeks(formData, "id"));
     if (!idKarya) kembaliGalat("/member/artworks", "Karya tidak valid.");
     const kembali = "/member/artworks/" + idKarya + "/edit";
 
+    // Kepemilikan: hanya pemilik karya yang boleh mengubah
     const milik = await pool.query("SELECT id FROM artworks WHERE id = $1 AND user_id = $2", [idKarya, pengguna.id]).catch(() => null);
     if (!milik || milik.rows.length === 0) kembaliGalat("/member/artworks", "Karya tidak ditemukan atau bukan milik Anda.");
 
@@ -109,11 +115,28 @@
     if (isian.galat) kembaliGalat(kembali, isian.galat);
     const { judul, deskripsi, idKategori, jenis, tag } = isian.data;
 
+    const bentrok = await ambilBanyak(
+        `SELECT ch.title, ch.start_date, ch.end_date
+        FROM submissions s JOIN challenges ch ON ch.id = s.challenge_id
+        WHERE s.artwork_id = $1
+        AND EXISTS (SELECT 1 FROM challenge_categories cc WHERE cc.challenge_id = ch.id)
+        AND NOT EXISTS (SELECT 1 FROM challenge_categories cc WHERE cc.challenge_id = ch.id AND cc.category_id = $2)`,
+        [idKarya, idKategori]
+    );
+    const challengeAktif = bentrok.find((c) => hitungStatus(c.start_date, c.end_date) !== "berakhir");
+    if (challengeAktif) {
+        kembaliGalat(
+        kembali,
+        'Karya ini sedang diikutkan di challenge "' + challengeAktif.title + '" yang tidak menerima kategori tersebut. Tarik submisi terlebih dahulu sebelum mengganti kategori.'
+        );
+    }
+
     const klien = await pool.connect().catch(() => null);
     if (!klien) kembaliGalat(kembali, "Database belum tersambung. Coba lagi nanti.");
     let berhasil = false;
     try {
         await klien.query("BEGIN");
+        // file_url tidak diubah: gambar tidak bisa diganti setelah terbit
         await klien.query(
         `UPDATE artworks SET title = $1, description = $2, category_id = $3, artwork_type = $4
         WHERE id = $5 AND user_id = $6`,
@@ -141,7 +164,13 @@
     if (!idKarya) kembaliGalat("/member/artworks", "Karya tidak valid.");
 
     let jumlah = 0;
+    let fileLama = null;
     try {
+        // Simpan lokasi gambar 
+        const ada = await pool.query("SELECT file_url FROM artworks WHERE id = $1 AND user_id = $2", [idKarya, pengguna.id]);
+        fileLama = ada.rows[0] ? ada.rows[0].file_url : null;
+
+        // Kepemilikan dicek 
         const hasil = await pool.query("DELETE FROM artworks WHERE id = $1 AND user_id = $2", [idKarya, pengguna.id]);
         jumlah = hasil.rowCount;
     } catch (error) {
@@ -150,8 +179,11 @@
     }
     if (jumlah === 0) kembaliGalat("/member/artworks", "Karya tidak ditemukan atau bukan milik Anda.");
 
+    // Hapus berkas gambar dari disk (hanya yang berada di /uploads/)
+    await hapusFileLama(fileLama);
+
     revalidatePath("/member");
     revalidatePath("/member/artworks");
     revalidatePath("/artworks");
     kembaliSukses("/member/artworks", "Karya berhasil dihapus.");
-    }
+}

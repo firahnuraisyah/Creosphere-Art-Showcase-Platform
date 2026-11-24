@@ -1,11 +1,11 @@
-    "use server";
+"use server";
 
-    import bcrypt from "bcryptjs";
-    import { redirect } from "next/navigation";
-    import pool from "@/lib/db";
-    import { bacaTeks, cekWajib, cekPanjang, cekEmail, cekPassword } from "@/lib/validasi";
+import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
+import pool from "@/lib/db";
+import { bacaTeks, cekWajib, cekPanjang, cekEmail, cekPassword } from "@/lib/validasi";
 
-    export async function daftar(formData) {
+export async function daftar(formData) {
     const role = bacaTeks(formData, "role");
     const nama = bacaTeks(formData, "display_name");
     const email = bacaTeks(formData, "email").toLowerCase();
@@ -39,7 +39,11 @@
         }
     } catch (error) {
         console.error(error);
+        if (error.code === "23505") {
+        tujuan = "/register?galat=" + encodeURIComponent("Email sudah terdaftar. Silakan masuk.");
+        } else {
         tujuan = "/register?galat=" + encodeURIComponent("Gagal membuat akun. Pastikan database sudah tersambung.");
+        }
     }
     redirect(tujuan);
-    }
+}
