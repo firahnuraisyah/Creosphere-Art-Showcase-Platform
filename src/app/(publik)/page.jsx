@@ -12,6 +12,7 @@ import { hariIni, hitungStatus, sisaHari } from "@/lib/challenge";
 
 export const dynamic = "force-dynamic";
 
+// Karya acak untuk hero
 const SQL_ACAK = `
     SELECT a.id, a.title, a.file_url, u.display_name AS artis
     FROM artworks a JOIN users u ON u.id = a.user_id
@@ -69,6 +70,7 @@ export default async function Beranda() {
     const karyaHero = denganRasio(await ambilBanyak(SQL_ACAK, [12]));
     const kolomHero = [...bagiKolom(karyaHero.slice(0, 6), 2), ...bagiKolom(karyaHero.slice(6, 12), 2)];
 
+  // Karya terpopuler: urut dari jumlah like terbanyak
     const karyaPopuler = await ambilBanyak(
         `SELECT a.id, a.title, a.file_url, u.display_name AS artis, u.is_active,
                 (SELECT COUNT(*) FROM likes l WHERE l.artwork_id = a.id) AS jumlah_like
@@ -169,7 +171,6 @@ export default async function Beranda() {
             </StripKarya>
             </div>
         </section>
-
 
         <section id="challenge" className="py-12 lg:py-16 bg-surface-container-low border-b border-outline-variant">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
