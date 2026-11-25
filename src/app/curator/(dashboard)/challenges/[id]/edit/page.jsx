@@ -27,7 +27,7 @@ export default async function UbahChallenge({ params, searchParams }) {
 
     return (
         <div className="max-w-4xl space-y-8">
-        <div className="flex items-center justify-between pb-6 border-b border-light-outline-variant">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-light-outline-variant">
             <div>
             <h1 className="font-headline text-headline-lg text-light-on-surface">Ubah Detail Challenge</h1>
             <p className="text-body-md text-light-on-surface-variant">

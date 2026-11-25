@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import UnggahGambar from "@/components/ui/UnggahGambar";
 import TombolKirim from "@/components/ui/TombolKirim";
+import PilihKategoriChallenge from "./PilihKategoriChallenge";
 import { kelasInput, kelasLabel } from "@/lib/gaya";
 import { hariIni } from "@/lib/challenge";
 
@@ -12,7 +13,7 @@ export default function FormChallenge({ aksi, challenge = null, kategori = [], k
         <form action={aksi} className="space-y-8">
         {challenge && <input type="hidden" name="id" value={challenge.id} />}
 
-        <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-4">
+        <div className="bg-light-surface rounded-xl border border-light-outline-variant p-4 sm:p-6 shadow-sm space-y-4">
             <label className="block text-label-lg text-light-on-surface font-medium">
             Banner Challenge <span className="text-danger">*</span>
             </label>
@@ -26,7 +27,7 @@ export default function FormChallenge({ aksi, challenge = null, kategori = [], k
             />
         </div>
 
-        <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-5">
+        <div className="bg-light-surface rounded-xl border border-light-outline-variant p-4 sm:p-6 shadow-sm space-y-5">
             <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Informasi Umum</h2>
             <div>
             <label htmlFor="title" className={kelasLabel}>Judul Challenge <span className="text-danger">*</span></label>
@@ -45,18 +46,11 @@ export default function FormChallenge({ aksi, challenge = null, kategori = [], k
             <label className="block text-label-lg text-light-on-surface font-medium mb-2">
                 Kategori Karya yang Diizinkan <span className="text-danger">*</span>
             </label>
-            {kategori.length === 0 ? (
-                <p className="text-body-sm text-light-on-surface-variant">Belum ada kategori. Minta Admin menambahkan kategori terlebih dahulu.</p>
-            ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {kategori.map((k) => (
-                    <label key={k.id} className="flex items-center gap-2 p-2.5 rounded border border-light-outline hover:bg-warm-cream cursor-pointer">
-                    <input type="checkbox" name="kategori" value={k.id} defaultChecked={kategoriTerpilih.includes(k.id)} className="rounded border-light-outline text-light-primary focus:ring-light-primary" />
-                    <span className="text-body-sm font-medium">{k.name}</span>
-                    </label>
-                ))}
-                </div>
-            )}
+            <PilihKategoriChallenge
+                kategori={kategori}
+                kategoriTerpilih={kategoriTerpilih}
+                bebasAwal={Boolean(challenge && kategoriTerpilih.length === 0)}
+            />
             </div>
 
             <div>
@@ -87,7 +81,7 @@ export default function FormChallenge({ aksi, challenge = null, kategori = [], k
             </div>
         </div>
 
-        <div className="flex items-center justify-end gap-4 pt-4 border-t border-light-outline-variant">
+        <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4 pt-4 border-t border-light-outline-variant">
             <Link href="/curator/challenges" className="px-5 py-2.5 rounded border border-light-outline text-body-sm font-medium hover:bg-warm-cream">
             Batal
             </Link>

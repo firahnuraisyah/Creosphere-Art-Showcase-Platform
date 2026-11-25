@@ -20,6 +20,7 @@ function tanggalValid(teks) {
 
 function bacaChallenge(formData, { bannerLama = "", tanggalLama = null, kunci = "" } = {}) {
     const hari = hariIni();
+    const semuaKategori = formData.get("semua_kategori") === "1";
     const data = {
         title: bacaTeks(formData, "title"),
         tagline: bacaTeks(formData, "tagline"),
@@ -29,7 +30,8 @@ function bacaChallenge(formData, { bannerLama = "", tanggalLama = null, kunci = 
         banner_url: bacaTeks(formData, "banner_url"),
         start_date: kunci ? tanggalLama.start_date : bacaTeks(formData, "start_date"),
         end_date: kunci === "semua" ? tanggalLama.end_date : bacaTeks(formData, "end_date"),
-        kategori: [...new Set(formData.getAll("kategori").map(ubahKeId).filter(Boolean))],
+        semuaKategori,
+        kategori: semuaKategori ? [] : [...new Set(formData.getAll("kategori").map(ubahKeId).filter(Boolean))],
     };
 
     const galat =
@@ -43,7 +45,9 @@ function bacaChallenge(formData, { bannerLama = "", tanggalLama = null, kunci = 
         cekPanjang(data.prize, 150, "Hadiah") ||
         (!data.banner_url ? "Banner challenge wajib diunggah." : null) ||
         (data.banner_url && data.banner_url !== bannerLama ? cekUrlUnggahan(data.banner_url, "banners") : null) ||
-        (data.kategori.length === 0 ? "Pilih minimal satu kategori karya." : null) ||
+        (!data.semuaKategori && data.kategori.length === 0
+            ? "Pilih minimal satu kategori karya atau pilih Bebas (Semua Kategori)."
+            : null) ||
         (!tanggalValid(data.start_date) ? "Tanggal mulai tidak valid." : null) ||
         (!tanggalValid(data.end_date) ? "Tanggal selesai tidak valid." : null) ||
         (!kunci && data.start_date < hari ? "Tanggal mulai tidak boleh tanggal yang sudah lewat." : null) ||
@@ -54,8 +58,10 @@ function bacaChallenge(formData, { bannerLama = "", tanggalLama = null, kunci = 
 }
 
 async function simpanKategori(klien, idChallenge, daftarKategori) {
-    const ada = await klien.query("SELECT id FROM categories WHERE id = ANY($1::int[])", [daftarKategori]);
-    if (ada.rows.length !== daftarKategori.length) throw galatPengguna("Ada kategori yang tidak ditemukan.");
+    if (daftarKategori.length > 0) {
+        const ada = await klien.query("SELECT id FROM categories WHERE id = ANY($1::int[])", [daftarKategori]);
+        if (ada.rows.length !== daftarKategori.length) throw galatPengguna("Ada kategori yang tidak ditemukan.");
+    }
     await klien.query("DELETE FROM challenge_categories WHERE challenge_id = $1", [idChallenge]);
     for (const idKategori of daftarKategori) {
         await klien.query("INSERT INTO challenge_categories (challenge_id, category_id) VALUES ($1, $2)", [idChallenge, idKategori]);
