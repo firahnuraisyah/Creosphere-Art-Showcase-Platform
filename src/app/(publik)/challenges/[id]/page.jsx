@@ -9,7 +9,7 @@ import { ambilBanyak, ambilSatu } from "@/lib/query";
 import { ambilPengguna } from "@/lib/auth";
 import { ubahKeId } from "@/lib/validasi";
 import { hitungStatus, labelStatus } from "@/lib/challenge";
-import { formatTanggal, formatAngka } from "@/lib/format";
+import { formatTanggal, formatAngka, formatAngkaSingkat } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +25,7 @@ const kelasLencana = {
     belum_mulai: "bg-sky-500/90 text-white",
     berakhir: "bg-amber-500/90 text-white",
 };
+
 const labelLencana = { aktif: "Challenge Aktif", belum_mulai: "Segera Hadir", berakhir: "Challenge Selesai" };
 const medali = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
@@ -140,7 +141,7 @@ export default async function DetailChallenge({ params }) {
                         <span className="font-label text-label-md text-outline truncate max-w-full">{p.artis}</span>
                         <span className="font-title text-title-md text-on-surface truncate max-w-full">{p.title}</span>
                         <span className="font-body text-body-sm text-on-surface-variant tabular-nums">
-                        {Number(p.jumlah_like) > 0 ? "disukai oleh " + formatAngka(p.jumlah_like) + " orang" : "belum ada yang menyukai"}
+                        {Number(p.jumlah_like) > 0 ? "disukai oleh " + formatAngkaSingkat(p.jumlah_like) + " orang" : "belum ada yang menyukai"}
                         </span>
                         {p.curator_note && <span className="text-xs text-on-surface-variant mt-1 italic line-clamp-3">&ldquo;{p.curator_note}&rdquo;</span>}
                     </KartuPotret>

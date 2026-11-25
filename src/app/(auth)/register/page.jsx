@@ -4,6 +4,7 @@ import { Palette, Award, Info, Check } from "lucide-react";
 import HeaderAuth from "@/components/layout/HeaderAuth";
 import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import TombolKirim from "@/components/ui/TombolKirim";
+import KolomSandi from "@/components/auth/KolomSandi";
 import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 import { kelasInput, kelasLabel, kelasTombolUtama } from "@/lib/gaya";
 import { daftar } from "./actions";
@@ -77,7 +78,7 @@ export default async function HalamanRegister({ searchParams }) {
                 <label htmlFor="password" className={kelasLabel}>
                     Kata Sandi <span className="text-danger">*</span>
                 </label>
-                <input type="password" id="password" name="password" required minLength={8} maxLength={72} placeholder="Minimal 8 karakter, huruf dan angka" className={kelasInput} />
+                <KolomSandi id="password" name="password" minLength={8} maxLength={72} placeholder="Minimal 8 karakter, huruf dan angka" />
                 </div>
                 <label className="flex items-start gap-2.5 cursor-pointer text-body-sm text-light-on-surface-variant pt-1">
                 <input type="checkbox" required className="mt-0.5 rounded border-light-outline text-light-primary focus:ring-light-primary" />

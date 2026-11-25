@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Plus, Eye, Edit3, Trash2, Palette } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
-import { formatAngka, formatTanggalPendek } from "@/lib/format";
+import { formatAngka, formatAngkaSingkat, formatTanggalPendek } from "@/lib/format";
 import GambarKarya from "@/components/ui/GambarKarya";
 import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
@@ -81,7 +81,7 @@ export default async function HalamanKaryaSaya({ searchParams }) {
                         </span>
                         <span className="text-xs text-light-on-surface-variant">{item.artwork_type || "-"}</span>
                         </td>
-                        <td className="p-4 font-semibold text-terracotta">{formatAngka(item.jumlah_like)}</td>
+                        <td className="p-4 font-semibold text-terracotta">{formatAngkaSingkat(item.jumlah_like)}</td>
                         <td className="p-4 text-light-on-surface-variant">{formatTanggalPendek(item.created_at)}</td>
                         <td className="p-4">
                         <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-success border border-emerald-200">

@@ -3,7 +3,7 @@ import { Plus, Image as IkonGambar, Heart, Trophy, Bookmark, ArrowUpRight } from
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak, ambilSatu } from "@/lib/query";
 import { hitungStatus } from "@/lib/challenge";
-import { formatAngka, formatTanggalPendek, inisial, waktuRelatif } from "@/lib/format";
+import { formatAngka, formatAngkaSingkat, formatTanggalPendek, inisial, waktuRelatif } from "@/lib/format";
 import GambarKarya from "@/components/ui/GambarKarya";
 
 export const metadata = { title: "Dashboard Member" };
@@ -12,7 +12,6 @@ export const dynamic = "force-dynamic";
 export default async function HalamanDashboardMember() {
     const pengguna = await wajibPeran(["member"]);
 
-    // Query yang saling tidak bergantung dijalankan bersamaan (Promise.all)
     const [
         totalKarya,
         karyaBulanIni,
@@ -69,7 +68,6 @@ export default async function HalamanDashboardMember() {
     ]);
     const submisiAktif = submisiMember.filter((s) => hitungStatus(s.start_date, s.end_date) !== "berakhir");
 
-    // Gabungkan komentar + penghargaan, urutkan dari yang terbaru, ambil 5
     const aktivitas = [
         ...komentar.map((k) => ({ jenis: "komentar", waktu: k.created_at, data: k })),
         ...penghargaan.map((p) => ({ jenis: "penghargaan", waktu: p.created_at, data: p })),
@@ -113,7 +111,7 @@ export default async function HalamanDashboardMember() {
             <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm">
             <span className="text-xs uppercase tracking-wider text-light-on-surface-variant font-medium block mb-1">Total Apresiasi</span>
             <div className="flex items-baseline justify-between">
-                <span className="font-headline text-3xl font-bold text-terracotta">{formatAngka(totalLike?.jumlah ?? 0)}</span>
+                <span className="font-headline text-3xl font-bold text-terracotta">{formatAngkaSingkat(totalLike?.jumlah ?? 0)}</span>
                 <Heart className="w-5 h-5 text-terracotta" />
             </div>
             <span className="text-xs text-light-on-surface-variant mt-2 block">Dari seluruh {formatAngka(jumlahKarya)} karya yang terbit</span>
@@ -145,6 +143,7 @@ export default async function HalamanDashboardMember() {
                 Lihat semua {formatAngka(jumlahKarya)} karya
             </Link>
             </div>
+            {karyaTerbaru.length === 0 && <p className="text-body-sm text-light-on-surface-variant">Belum ada karya di portofolio Anda.</p>}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {karyaTerbaru.map((karya) => (
                 <div key={karya.id} className="bg-light-surface rounded-lg border border-light-outline-variant p-4 shadow-sm flex items-center gap-4">
@@ -155,7 +154,7 @@ export default async function HalamanDashboardMember() {
                     <span className="text-xs text-light-on-surface-variant block">Terbit {formatTanggalPendek(karya.created_at)}</span>
                     <div className="flex items-center gap-3 pt-2 text-xs text-light-on-surface-variant">
                     <span className="flex items-center gap-1 text-terracotta">
-                        <Heart className="w-3.5 h-3.5" /> {formatAngka(karya.jumlah_like)}
+                        <Heart className="w-3.5 h-3.5" /> {formatAngkaSingkat(karya.jumlah_like)}
                     </span>
                     <Link href={"/member/artworks/" + karya.id + "/edit"} className="text-light-primary hover:underline">
                         Edit
@@ -164,16 +163,6 @@ export default async function HalamanDashboardMember() {
                 </div>
                 </div>
             ))}
-            <Link
-                href="/member/artworks/new"
-                className="border-2 border-dashed border-light-outline rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-light-primary hover:bg-warm-cream transition-colors group"
-            >
-                <div className="w-10 h-10 rounded-full bg-light-surface border border-light-outline flex items-center justify-center text-light-primary mb-2 group-hover:scale-110 transition-transform">
-                <Plus className="w-5 h-5" />
-                </div>
-                <span className="font-headline text-title-md font-bold text-light-on-surface">Terbitkan Karya Baru</span>
-                <span className="text-xs text-light-on-surface-variant mt-1">Unggah JPG, PNG, WebP, atau GIF hingga 5 MB</span>
-            </Link>
             </div>
         </div>
 
