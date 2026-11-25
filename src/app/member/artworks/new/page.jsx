@@ -1,15 +1,15 @@
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilBanyak } from "@/lib/query";
-    import { kelasLabel } from "@/lib/gaya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import UnggahGambar from "@/components/ui/UnggahGambar";
-    import FormKarya, { TombolFormKarya } from "@/components/member/FormKarya";
-    import { unggahKarya } from "../actions";
+import { wajibPeran } from "@/lib/auth";
+import { ambilBanyak } from "@/lib/query";
+import { kelasLabel } from "@/lib/gaya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import UnggahGambar from "@/components/ui/UnggahGambar";
+import FormKarya, { TombolFormKarya } from "@/components/member/FormKarya";
+import { unggahKarya } from "../actions";
 
-    export const metadata = { title: "Unggah Karya" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Unggah Karya" };
+export const dynamic = "force-dynamic";
 
-    export default async function HalamanUnggahKarya({ searchParams }) {
+export default async function HalamanUnggahKarya({ searchParams }) {
     await wajibPeran(["member"]);
     const { galat, sukses } = await searchParams;
     const kategori = await ambilBanyak("SELECT id, name, is_system FROM categories ORDER BY is_system ASC, name ASC");
@@ -31,6 +31,7 @@
             <UnggahGambar
                 nama="file_url"
                 jenis="artworks"
+                wajib
                 judul="Klik untuk mengunggah gambar karya"
                 bantuan="Format didukung: JPG, PNG, WebP, GIF. Ukuran maksimal 5 MB."
             />
@@ -48,4 +49,4 @@
         </form>
         </div>
     );
-    }
+}

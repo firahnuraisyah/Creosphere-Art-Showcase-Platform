@@ -1,11 +1,13 @@
-    import Link from "next/link";
-    import { Check } from "lucide-react";
-    import UnggahGambar from "@/components/ui/UnggahGambar";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import { kelasInput, kelasLabel } from "@/lib/gaya";
+import Link from "next/link";
+import { Check } from "lucide-react";
+import UnggahGambar from "@/components/ui/UnggahGambar";
+import TombolKirim from "@/components/ui/TombolKirim";
+import { kelasInput, kelasLabel } from "@/lib/gaya";
+import { hariIni } from "@/lib/challenge";
 
-    export default function FormChallenge({ aksi, challenge = null, kategori = [], kategoriTerpilih = [], tanggalTerkunci = false, teksTombol }) {
+export default function FormChallenge({ aksi, challenge = null, kategori = [], kategoriTerpilih = [], kunci = "", teksTombol }) {
     const c = challenge || {};
+    const hari = hariIni();
     return (
         <form action={aksi} className="space-y-8">
         {challenge && <input type="hidden" name="id" value={challenge.id} />}
@@ -69,13 +71,17 @@
             </div>
             <div>
                 <label htmlFor="start_date" className={kelasLabel}>Tanggal Mulai <span className="text-danger">*</span></label>
-                <input type="date" id="start_date" name="start_date" required defaultValue={c.start_date || ""} disabled={tanggalTerkunci} className={kelasInput} />
+                <input type="date" id="start_date" name="start_date" required min={hari} defaultValue={c.start_date || ""} disabled={kunci !== ""} className={kelasInput} />
             </div>
             <div>
                 <label htmlFor="end_date" className={kelasLabel}>Tenggat (Tanggal Selesai) <span className="text-danger">*</span></label>
-                <input type="date" id="end_date" name="end_date" required defaultValue={c.end_date || ""} disabled={tanggalTerkunci} className={kelasInput} />
+                <input type="date" id="end_date" name="end_date" required min={hari} defaultValue={c.end_date || ""} disabled={kunci === "semua"} className={kelasInput} />
                 <span className="text-xs text-olive mt-1 block">
-                {tanggalTerkunci ? "Challenge sudah berakhir, tanggal tidak dapat diubah." : "Harus setelah tanggal mulai."}
+                {kunci === "semua"
+                    ? "Challenge sudah berakhir, tanggal tidak dapat diubah."
+                    : kunci === "mulai"
+                    ? "Challenge sudah berjalan: tanggal mulai terkunci, tenggat tidak boleh tanggal lampau."
+                    : "Tidak boleh tanggal lampau dan harus setelah tanggal mulai."}
                 </span>
             </div>
             </div>
@@ -92,4 +98,4 @@
         </div>
         </form>
     );
-    }
+}

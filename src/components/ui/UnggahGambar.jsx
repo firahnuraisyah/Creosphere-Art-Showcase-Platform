@@ -1,9 +1,9 @@
-    "use client";
+"use client";
 
-    import { useState } from "react";
-    import { ImagePlus, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Loader2 } from "lucide-react";
 
-    export default function UnggahGambar({
+export default function UnggahGambar({
     nama,
     jenis,
     nilaiAwal = "",
@@ -11,10 +11,16 @@
     judul = "Klik untuk memilih gambar",
     bantuan = "Format: JPG, PNG, WebP, GIF.",
     tinggiPratinjau = "aspect-[4/3]",
+    wajib = false,
     }) {
     const [url, setUrl] = useState(nilaiAwal);
     const [memuat, setMemuat] = useState(false);
     const [galat, setGalat] = useState("");
+    const inputWajib = useRef(null);
+
+    useEffect(() => {
+        if (inputWajib.current) inputWajib.current.dispatchEvent(new Event("input", { bubbles: true }));
+    }, [url]);
 
     async function pilihBerkas(e) {
         const berkas = e.target.files[0];
@@ -94,6 +100,19 @@
             </>
             )}
         </label>
+        {wajib && (
+            <input
+            type="text"
+            ref={inputWajib}
+            required
+            onChange={() => {}}
+            tabIndex={-1}
+            aria-label="Gambar karya"
+            data-pesan="Gambar karya wajib diunggah terlebih dahulu."
+            value={url}
+            className="sr-only"
+            />
+        )}
         <input id={idInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={pilihBerkas} className="sr-only" />
         {url && (
             <div className="mt-2 flex items-center gap-3 text-body-sm">
@@ -106,4 +125,4 @@
         {galat && <p role="alert" className="mt-2 text-body-sm text-danger">{galat}</p>}
         </div>
     );
-    }
+}

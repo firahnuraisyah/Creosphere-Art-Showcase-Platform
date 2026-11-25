@@ -7,6 +7,7 @@ const ATTR = "data-pesan-galat";
 function pesanUntuk(el) {
     const v = el.validity;
     if (v.valueMissing) {
+        if (el.dataset.pesan) return el.dataset.pesan;
         if (el.type === "checkbox") return "Centang kotak ini untuk melanjutkan.";
         if (el.type === "radio") return "Pilih salah satu opsi.";
         if (el.type === "file") return "Pilih berkas terlebih dahulu.";
@@ -43,6 +44,7 @@ export default function PenangkapValidasi() {
         e.preventDefault(); 
         hapusPesan(el);
         el.setAttribute("aria-invalid", "true");
+        
         const pesan = document.createElement("p");
         pesan.setAttribute(ATTR, "");
         pesan.dataset.untuk = el.name || el.id;
@@ -54,17 +56,18 @@ export default function PenangkapValidasi() {
         const pertama = el.form ? el.form.querySelector(":invalid") : el;
         if (pertama === el) el.focus({ preventScroll: false });
         }
+        
         function saatDiubah(e) {
-        const el = e.target;
-        if (el instanceof HTMLElement && el.getAttribute("aria-invalid") === "true" && el.checkValidity()) hapusPesan(el);
-        }
-        document.addEventListener("invalid", saatTidakSah, true);
-        document.addEventListener("input", saatDiubah, true);
-        document.addEventListener("change", saatDiubah, true);
-        return () => {
-        document.removeEventListener("invalid", saatTidakSah, true);
-        document.removeEventListener("input", saatDiubah, true);
-        document.removeEventListener("change", saatDiubah, true);
+            const el = e.target;
+            if (el instanceof HTMLElement && el.getAttribute("aria-invalid") === "true" && el.checkValidity()) hapusPesan(el);
+            }
+            document.addEventListener("invalid", saatTidakSah, true);
+            document.addEventListener("input", saatDiubah, true);
+            document.addEventListener("change", saatDiubah, true);
+            return () => {
+            document.removeEventListener("invalid", saatTidakSah, true);
+            document.removeEventListener("input", saatDiubah, true);
+            document.removeEventListener("change", saatDiubah, true);
         };
     }, []);
 

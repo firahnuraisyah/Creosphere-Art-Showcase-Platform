@@ -1,17 +1,17 @@
-    import { notFound } from "next/navigation";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu, ambilBanyak } from "@/lib/query";
-    import { hitungStatus } from "@/lib/challenge";
-    import { ubahKeId } from "@/lib/validasi";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import FormChallenge from "../../../_komponen/FormChallenge";
-    import LencanaStatus from "../../../_komponen/LencanaStatus";
-    import { ubahChallenge } from "../../../actions";
+import { notFound } from "next/navigation";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu, ambilBanyak } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { ubahKeId } from "@/lib/validasi";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import FormChallenge from "../../../_komponen/FormChallenge";
+import LencanaStatus from "../../../_komponen/LencanaStatus";
+import { ubahChallenge } from "../../../actions";
 
-    export const metadata = { title: "Ubah Challenge" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Ubah Challenge" };
+export const dynamic = "force-dynamic";
 
-    export default async function UbahChallenge({ params, searchParams }) {
+export default async function UbahChallenge({ params, searchParams }) {
     const pengguna = await wajibPeran(["curator"], { harusDisetujui: true });
     const { id: idTeks } = await params;
     const { galat } = await searchParams;
@@ -45,9 +45,9 @@
             challenge={challenge}
             kategori={kategori}
             kategoriTerpilih={terpilih.map((t) => t.category_id)}
-            tanggalTerkunci={status === "berakhir"}
+            kunci={status === "berakhir" ? "semua" : status === "aktif" ? "mulai" : ""}
             teksTombol="Simpan Perubahan"
         />
         </div>
     );
-    }
+}
