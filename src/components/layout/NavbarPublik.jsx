@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Plus, ChevronDown } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 import { inisial } from "@/lib/format";
 import Logo from "@/components/layout/Logo";
@@ -63,16 +63,6 @@ export default async function NavbarPublik() {
 
             {pengguna && (
                 <>
-                {pengguna.role === "member" && (
-                    <Link
-                    href="/member/artworks/new"
-                    className="hidden sm:inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded bg-primary text-on-primary font-label text-label-lg hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors duration-state-change"
-                    >
-                    <Plus className="w-4 h-4" />
-                    <span>Unggah Karya</span>
-                    </Link>
-                )}
-
                 <details className="relative group">
                     <summary
                     className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-warm-cream transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden"
@@ -99,23 +89,17 @@ export default async function NavbarPublik() {
                     )}
                     {pengguna.role === "member" && (
                         <>
-                        <Link href="/member/artworks" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            Karya Saya
+                        <Link href={"/artists/" + pengguna.id} className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
+                            Profil
                         </Link>
                         <Link href="/member/artworks/new" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Unggah Karya
                         </Link>
                         <Link href="/member/favorites" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            Favorit Saya
+                            Favorit
                         </Link>
                         <Link href="/member/submissions" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            Submisi Saya
-                        </Link>
-                        <Link href="/member/profile" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            Edit Profil
-                        </Link>
-                        <Link href={"/artists/" + pengguna.id} className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            Profil Publik Saya
+                            Submisi
                         </Link>
                         </>
                     )}

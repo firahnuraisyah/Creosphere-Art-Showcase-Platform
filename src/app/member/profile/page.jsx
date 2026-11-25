@@ -109,9 +109,9 @@ export default async function HalamanEditProfil({ searchParams }) {
             </div>
             </div>
 
-            <div className="flex items-center justify-end gap-4 pt-4 border-t border-light-outline-variant">
+            <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4 pt-4 border-t border-light-outline-variant">
             <Link
-                href="/member"
+                href={"/artists/" + pengguna.id}
                 className="px-5 py-2.5 rounded-DEFAULT border border-light-outline text-light-on-surface font-medium hover:bg-warm-cream transition-colors text-body-sm"
             >
                 Batal

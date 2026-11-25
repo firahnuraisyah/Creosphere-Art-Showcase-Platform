@@ -5,14 +5,23 @@ import { usePathname } from "next/navigation";
 
 export default function SubNavbarPeran({ tema, idPengguna = null }) {
     const pathname = usePathname();
+
+    if (
+        tema === "member" &&
+        (pathname === "/member/profile" ||
+            pathname === "/member/artworks" ||
+            /^\/member\/artworks\/\d+\/edit$/.test(pathname))
+    ) {
+        return null;
+    }
+
     const daftar =
         tema === "member"
             ? [
-                  { href: "/member/artworks", label: "Karya Saya" },
+                  ...(idPengguna ? [{ href: "/artists/" + idPengguna, label: "Profil Saya" }] : []),
                   { href: "/member/artworks/new", label: "Unggah Karya" },
-                  { href: "/member/favorites", label: "Favorit Saya" },
-                  { href: "/member/submissions", label: "Submisi Saya" },
-                  { href: "/member/profile", label: "Edit Profil" },
+                  { href: "/member/favorites", label: "Favorit" },
+                  { href: "/member/submissions", label: "Submisi" },
               ]
             : tema === "curator"
             ? [

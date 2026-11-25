@@ -16,9 +16,15 @@ function namaHalaman(url) {
     if (/^\/challenges\/\d+$/.test(path)) return "Halaman Challenge";
     if (/^\/artworks\/\d+$/.test(path)) return "Halaman Karya";
     if (path === "/search") return "Hasil Pencarian";
-    if (path === "/member/favorites") return "Favorit Saya";
-    if (path === "/member/artworks") return "Karya Saya";
-    if (path === "/member/submissions") return "Submisi Saya";
+    if (path === "/member/favorites") return "Favorit";
+    if (path === "/member/artworks") return "Edit Karya";
+    if (path === "/member/artworks/new") return "Unggah Karya";
+    if (/^\/member\/artworks\/\d+\/edit$/.test(path)) return "Edit Karya";
+    if (path === "/member/profile") return "Edit Profil";
+    if (path === "/member/submissions") return "Submisi";
+    if (path === "/curator/challenges") return "Challenge Saya";
+    if (path === "/curator/challenges/new") return "Buat Challenge";
+    if (path === "/curator/profile") return "Edit Profil";
     return null;
 }
 

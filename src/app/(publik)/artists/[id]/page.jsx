@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Globe } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import TombolKembali from "@/components/layout/TombolKembali";
+import SubNavbarPeran from "@/components/layout/SubNavbarPeran";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import Masonry from "@/components/ui/Masonry";
 import { denganRasio } from "@/lib/ukuranGambar";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
 import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { ambilPengguna } from "@/lib/auth";
 import { ubahKeId } from "@/lib/validasi";
 import { formatTahun, formatAngka } from "@/lib/format";
 import { bacaTautan } from "@/lib/tautan";
@@ -19,10 +23,13 @@ export async function generateMetadata({ params }) {
     return { title: s ? s.display_name : "Profil Seniman" };
 }
 
-export default async function ProfilSeniman({ params }) {
+export default async function ProfilSeniman({ params, searchParams }) {
     const { id } = await params;
+    const { sukses } = await searchParams;
     const idSeniman = ubahKeId(id);
     if (!idSeniman) notFound();
+
+    const pengguna = await ambilPengguna();
 
     const s = await ambilSatu(
         `SELECT id, display_name, is_active, avatar_url, bio, country, external_links, created_at,
@@ -45,12 +52,25 @@ export default async function ProfilSeniman({ params }) {
     const daftarTautan = bacaTautan(s.external_links);
 
     const meta = "font-label text-label-md text-outline";
+    const adalahPemilik = Boolean(pengguna && pengguna.role === "member" && pengguna.id === s.id);
 
     return (
         <main className="flex-1 bg-surface">
+        {adalahPemilik && <SubNavbarPeran tema="member" idPengguna={pengguna.id} />}
         <section aria-label="Profil seniman" className="bg-surface/95 border-b border-outline-variant">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-            <div className="mb-8"><TombolKembali bawaan={{ href: "/artists", label: "Komunitas" }} /></div>
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+                <TombolKembali bawaan={{ href: "/artists", label: "Komunitas" }} />
+                {adalahPemilik && (
+                    <Link
+                        href="/member/profile"
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-primary-hover transition-colors shadow-sm"
+                    >
+                        Edit Profil
+                    </Link>
+                )}
+            </div>
+            {sukses && <div className="mb-6"><Pemberitahuan sukses={sukses} /></div>}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 <div className="lg:col-span-5 flex items-start gap-5">
                 <Avatar nama={s.display_name} src={s.avatar_url} ukuran="w-20 h-20 sm:w-24 sm:h-24 shrink-0" teks="text-3xl" />
@@ -104,9 +124,19 @@ export default async function ProfilSeniman({ params }) {
 
         <section id="karya-seniman" aria-label="Karya seniman" className="py-10 lg:py-14">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between gap-4 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <h2 className="font-headline text-headline-md text-on-surface">Karya Pilihan</h2>
-                <span className="font-body text-body-sm text-outline tabular-nums">{formatAngka(karya.length)} karya</span>
+                <div className="flex items-center gap-4">
+                    <span className="font-body text-body-sm text-outline tabular-nums">{formatAngka(karya.length)} karya</span>
+                    {adalahPemilik && (
+                        <Link
+                            href="/member/artworks"
+                            className="inline-flex items-center justify-center px-4 py-2 rounded-DEFAULT border border-light-outline bg-light-surface text-light-on-surface text-body-sm font-medium hover:bg-warm-cream transition-colors"
+                        >
+                            Edit Karya
+                        </Link>
+                    )}
+                </div>
             </div>
             {karya.length === 0 ? (
                 <KeadaanKosong judul="Belum ada karya" deskripsi="Seniman ini belum mengunggah karya." />

@@ -4,6 +4,6 @@ import { wajibPeran } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export default async function HalamanIndexMember() {
-    await wajibPeran(["member"]);
-    redirect("/member/artworks");
+    const pengguna = await wajibPeran(["member"]);
+    redirect("/artists/" + pengguna.id);
 }

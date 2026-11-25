@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Eye, Edit3, Trash2, Palette } from "lucide-react";
+import { Eye, Edit3, Trash2, Palette } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
 import { formatAngka, formatAngkaSingkat, formatTanggalPendek } from "@/lib/format";
@@ -27,20 +27,11 @@ export default async function HalamanKaryaSaya({ searchParams }) {
 
     return (
         <div className="max-w-7xl space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-light-outline-variant">
-            <div>
-            <h1 className="font-headline text-headline-lg text-light-on-surface">Karya Saya ({formatAngka(karya.length)})</h1>
+        <div className="pb-6 border-b border-light-outline-variant">
+            <h1 className="font-headline text-headline-lg text-light-on-surface">Edit Karya ({formatAngka(karya.length)})</h1>
             <p className="text-body-md text-light-on-surface-variant">
-                Kelola karya yang Anda unggah, ubah deskripsi dan tag, atau terbitkan karya baru.
+                Kelola karya yang Anda unggah, ubah deskripsi dan tag, atau hapus karya.
             </p>
-            </div>
-            <Link
-            href="/member/artworks/new"
-            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors flex items-center gap-2 text-body-sm shadow-sm"
-            >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Karya Baru</span>
-            </Link>
         </div>
 
         <Pemberitahuan galat={galat} sukses={sukses} />
@@ -49,8 +40,7 @@ export default async function HalamanKaryaSaya({ searchParams }) {
             <KeadaanKosong
             ikon={Palette}
             judul="Belum ada karya"
-            deskripsi="Mulai bangun portofolio Anda dengan mengunggah karya pertama."
-            tombol={{ teks: "Unggah Karya", href: "/member/artworks/new" }}
+            deskripsi="Mulai bangun portofolio Anda melalui menu Unggah Karya di subnavbar."
             />
         ) : (
             <div className="bg-light-surface rounded-xl border border-light-outline-variant overflow-hidden shadow-sm">

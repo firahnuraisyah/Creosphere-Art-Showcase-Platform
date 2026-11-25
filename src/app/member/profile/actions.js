@@ -53,5 +53,6 @@ export async function simpanProfil(formData) {
 
     revalidatePath("/member");
     revalidatePath(HALAMAN);
-    kembaliSukses(HALAMAN, "Perubahan profil berhasil disimpan.");
+    revalidatePath("/artists/" + pengguna.id);
+    kembaliSukses("/artists/" + pengguna.id, "Perubahan profil berhasil disimpan.");
 }
