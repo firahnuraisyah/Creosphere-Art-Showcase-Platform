@@ -99,7 +99,7 @@ Pastikan kamu sudah menginstal:
 **1. Clone repositori**
 
 ```bash
-git clone https://github.com/username/creosphere-art-showcase-platform.git
+git clone [https://github.com/username/creosphere-art-showcase-platform.git](https://github.com/username/creosphere-art-showcase-platform.git)
 ```
 
 **2. Masuk ke direktori proyek**
@@ -146,6 +146,45 @@ npm run dev
 ```
 
 Buka [http://localhost:3000](http://localhost:3000) di browser kamu. 🎉
+
+---
+
+## 🔐 Akun Pengujian (Demo Accounts)
+
+Jika kamu menjalankan `src/database/seed.sql`, tersedia 1 akun Admin, 8 akun Kurator, dan 11 akun Member/Seniman beserta 75 karya dan 10 challenge.  
+**Kata sandi default untuk semua akun:** `Creosphere123`
+
+### 🛡️ Admin
+| Nama | Email | Status |
+|------|-------|--------|
+| **Admin Creosphere** | `admin@creosphere.test` | `approved` (Aktif) |
+
+### 🏛️ Daftar Kurator
+| Nama | Email | Afiliasi / Spesialisasi | Negara | Status |
+|------|-------|-------------------------|--------|--------|
+| **Fatoş Üstek** | `fatos.ustek@creosphere.test` | Independent Practice *(Painting, Sculpture & 3D Art, Contemporary Installations)* | Turki / Inggris | `approved` |
+| **Larry Ossei-Mensah** | `larry.osseimensah@creosphere.test` | ARTNOIR / Independent *(Painting, Drawing, Mixed Media)* | Amerika Serikat | `approved` |
+| **Naomi Beckwith** | `naomi.beckwith@creosphere.test` | The Guggenheim Museum *(Painting, Sculpture & 3D Art, Installation Art)* | Amerika Serikat | `approved` |
+| **Rodrigo Moura** | `rodrigo.moura@creosphere.test` | MALBA *(Painting, Drawing, Photography)* | Argentina / Brasil | `approved` |
+| **Doryun Chong** | `doryun.chong@creosphere.test` | M+ Museum *(Sculpture & 3D Art, Mixed Media, New Media Art)* | Hong Kong / Korea Selatan | `approved` |
+| **Hans Ulrich Obrist** | `hans.ulrich.obrist@creosphere.test` | Serpentine Galleries *(Seni Kontemporer, Arsitektur, Pameran Lintas Disiplin)* | Swiss / Inggris | `approved` |
+| **Kurator Pending Uji** | `curator.pending@creosphere.test` | Curator Independen *(Data uji verifikasi)* | — | `pending` |
+| **Kurator Rejected Uji** | `curator.rejected@creosphere.test` | Curator Independen *(Data uji penolakan)* | — | `rejected` |
+
+### 🎨 Daftar Member / Seniman
+| Nama | Email | Negara | Fokus Karya | Status Akun |
+|------|-------|--------|-------------|-------------|
+| **Amoako Boafo** | `amoako.boafo@creosphere.test` | Ghana | Potret figuratif dengan sapuan jari khas | Nonaktif (`FALSE`) |
+| **Felipe Pantone** | `felipe.pantone@creosphere.test` | Argentina / Spanyol | Karya optik & spektrum warna digital | Aktif (`TRUE`) |
+| **Simone Leigh** | `simone.leigh@creosphere.test` | Amerika Serikat | Patung keramik, perunggu & serat alami | Aktif (`TRUE`) |
+| **Nick Cave** | `nick.cave@creosphere.test` | Amerika Serikat | Patung kostum *Soundsuit* & *mixed media* | Aktif (`TRUE`) |
+| **Chiharu Shiota** | `chiharu.shiota@creosphere.test` | Jepang | Instalasi jalinan benang & objek sehari-hari | Aktif (`TRUE`) |
+| **Eko Nugroho** | `eko.nugroho@creosphere.test` | Indonesia | Lukisan, bordir tangan, patung & kritik sosial | Nonaktif (`FALSE`) |
+| **CJ Hendry** | `cj.hendry@creosphere.test` | Australia | Gambar pensil/spidol hiperrealistik | Aktif (`TRUE`) |
+| **JR** | `jr@creosphere.test` | Prancis | Seni jalanan & instalasi fotografi skala raksasa | Aktif (`TRUE`) |
+| **Billie Zangewa** | `billie.zangewa@creosphere.test` | Malawi / Afrika Selatan | Kolase tekstil dari kain sutra jahit tangan | Aktif (`TRUE`) |
+| **Natalia González Martín** | `natalia.gonzalez.martin@creosphere.test` | Spanyol | Lukisan figuratif bernuansa kontemplatif | Aktif (`TRUE`) |
+| **Alicja Pakosz** | `alicja.pakosz@creosphere.test` | Polandia | Lukisan surealis & pengamatan keseharian | Aktif (`TRUE`) |
 
 ---
 
@@ -245,7 +284,7 @@ creosphere-art-showcase-platform/
 
 ## 🗄️ Skema Database
 
-```
+```text
 users ──────────────────────────────────────────────────────────────────────┐
   id, display_name, email, role (admin|member|curator), status,             │
   avatar_url, headline, bio, country, cv_url, portfolio_url                 │
@@ -293,12 +332,4 @@ Tidak untuk distribusi atau penggunaan komersial tanpa izin.
 
 ## 👤 Author
 
-**Creosphere** dikembangkan oleh mahasiswa Semester 3 sebagai bagian dari mata kuliah **Pemrograman Web**.
-
-<div align="center">
-
----
-
-*Dibuat dengan ❤️ dan ☕ — Creosphere © 2024*
-
-</div>
+**Creosphere** oleh Firah Nuraisyah (H071251053) Sistem Informasi, Universitas Hasanuddin.
