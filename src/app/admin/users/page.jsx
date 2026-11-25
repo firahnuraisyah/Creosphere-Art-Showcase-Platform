@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Ban, UserCheck, Users } from "lucide-react";
+import { Ban, UserCheck, Users } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilSatu, ambilBanyak } from "@/lib/query";
 import { formatTanggalPendek, formatAngka, inisial } from "@/lib/format";
@@ -22,9 +22,8 @@ const kelasStatus = {
 
 export default async function ManajemenPengguna({ searchParams }) {
     const admin = await wajibPeran(["admin"]);
-    const { galat, sukses, peran: peranParam, q: qParam } = await searchParams;
+    const { galat, sukses, peran: peranParam } = await searchParams;
     const peran = PERAN_SAH.includes(peranParam) ? peranParam : "";
-    const q = (qParam || "").trim().slice(0, 100);
 
     const hitung =
         (await ambilSatu(
@@ -40,10 +39,6 @@ export default async function ManajemenPengguna({ searchParams }) {
     if (peran) {
         params.push(peran);
         syarat.push("role = $" + params.length);
-    }
-    if (q) {
-        params.push("%" + q + "%");
-        syarat.push("(display_name ILIKE $" + params.length + " OR email ILIKE $" + params.length + ")");
     }
     const kondisi = syarat.length ? "WHERE " + syarat.join(" AND ") : "";
 
@@ -63,7 +58,6 @@ export default async function ManajemenPengguna({ searchParams }) {
     const buatUrl = (nilai) => {
         const p = new URLSearchParams();
         if (nilai) p.set("peran", nilai);
-        if (q) p.set("q", q);
         const teks = p.toString();
         return "/admin/users" + (teks ? "?" + teks : "");
     };
@@ -96,17 +90,10 @@ export default async function ManajemenPengguna({ searchParams }) {
                 </Link>
             ))}
             </div>
-            <form method="GET" action="/admin/users" className="relative w-full sm:w-72">
-            {peran && <input type="hidden" name="peran" value={peran} />}
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-light-on-surface-variant">
-                <Search className="w-4 h-4" />
-            </span>
-            <input type="search" name="q" defaultValue={q} placeholder="Cari nama atau email..." className="w-full pl-9 pr-3 py-1.5 rounded border border-light-outline text-body-sm bg-light-surface" />
-            </form>
         </div>
 
         {pengguna.length === 0 ? (
-            <KeadaanKosong ikon={Users} judul="Pengguna tidak ditemukan" deskripsi="Coba ubah filter peran atau kata pencarian." />
+            <KeadaanKosong ikon={Users} judul="Pengguna tidak ditemukan" deskripsi="Belum ada pengguna dengan peran ini." />
         ) : (
             <div className="bg-light-surface rounded-xl border border-light-outline-variant overflow-hidden shadow-sm">
             <div className="overflow-x-auto">

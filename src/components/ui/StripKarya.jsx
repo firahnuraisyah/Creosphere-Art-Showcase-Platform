@@ -21,10 +21,10 @@ export default function StripKarya({ judul, deskripsi, children }) {
             <p className="font-body text-body-sm text-outline">{deskripsi}</p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-            <button type="button" onClick={() => geser(-1)} aria-label="Geser karya ke kiri" className={tombol}>
+            <button type="button" onClick={() => geser(-1)} aria-label="Geser ke kiri" className={tombol}>
                 <ChevronLeft className="w-5 h-5" />
             </button>
-            <button type="button" onClick={() => geser(1)} aria-label="Geser karya ke kanan" className={tombol}>
+            <button type="button" onClick={() => geser(1)} aria-label="Geser ke kanan" className={tombol}>
                 <ChevronRight className="w-5 h-5" />
             </button>
             </div>
@@ -33,7 +33,7 @@ export default function StripKarya({ judul, deskripsi, children }) {
             ref={jalur}
             className="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth py-2 snap-x"
             tabIndex={0}
-            aria-label="Daftar karya, geser ke samping"
+            aria-label="Daftar geser ke samping"
         >
             {children}
         </div>

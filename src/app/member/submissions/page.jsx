@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, XCircle, Trophy, Send } from "lucide-react";
+import { XCircle, Trophy, Send } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
 import { formatTanggalPendek } from "@/lib/format";
@@ -33,20 +33,13 @@ export default async function HalamanSubmisiSaya({ searchParams }) {
 
     return (
         <div className="max-w-7xl space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-light-outline-variant">
+        <div className="pb-6 border-b border-light-outline-variant">
             <div>
             <h1 className="font-headline text-headline-lg text-light-on-surface">Submisi Challenge Saya</h1>
             <p className="text-body-md text-light-on-surface-variant">
                 Pantau karya yang Anda ikutkan ke challenge. Submisi dapat ditarik sebelum challenge berakhir.
             </p>
             </div>
-            <Link
-            href="/challenges"
-            className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2"
-            >
-            <Compass className="w-4 h-4" />
-            <span>Lihat Challenge Terbuka</span>
-            </Link>
         </div>
 
         <Pemberitahuan galat={galat} sukses={sukses} />
