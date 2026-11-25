@@ -14,6 +14,16 @@ export const dynamic = "force-dynamic";
 
 const SYARAT_TAMPIL = "role = 'curator' AND status = 'approved'";
 
+// Urutan tampil challenge di profil curator: aktif dulu, lalu segera hadir, terakhir yang selesai
+const urutanStatus = { aktif: 0, belum_mulai: 1, berakhir: 2 };
+
+// Warna lencana status di pojok banner (sama dengan yang dipakai di halaman search)
+const kelasStatus = {
+    aktif: "bg-success-container text-on-success-container",
+    belum_mulai: "bg-info-container text-on-info-container",
+    berakhir: "bg-surface-container text-on-surface-variant",
+};
+
 export async function generateMetadata({ params }) {
     const { id } = await params;
     const idAngka = ubahKeId(id);
