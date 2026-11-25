@@ -11,7 +11,10 @@ import GambarKarya from "@/components/ui/GambarKarya";
 import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
 import TombolKirim from "@/components/ui/TombolKirim";
-import { kirimSubmisi } from "./actions";
+import UnggahGambar from "@/components/ui/UnggahGambar";
+import FormKarya from "@/components/member/FormKarya";
+import { kelasLabel } from "@/lib/gaya";
+import { kirimSubmisi, unggahKaryaChallenge } from "./actions";
 
 export const metadata = { title: "Ikuti Challenge" };
 export const dynamic = "force-dynamic";
@@ -45,6 +48,13 @@ export default async function HalamanSubmisiChallenge({ params, searchParams }) 
         "SELECT c.name FROM challenge_categories cc JOIN categories c ON c.id = cc.category_id WHERE cc.challenge_id = $1 ORDER BY c.name",
         [idChallenge]
     );
+    const kategoriForm = await ambilBanyak(
+        `SELECT id, name, is_system FROM categories
+        WHERE NOT EXISTS (SELECT 1 FROM challenge_categories WHERE challenge_id = $1)
+            OR id IN (SELECT category_id FROM challenge_categories WHERE challenge_id = $1)
+        ORDER BY is_system ASC, name ASC`,
+        [idChallenge]
+    );
     const karya = await ambilBanyak(
         `SELECT a.id, a.title, a.artwork_type, a.file_url, c.name AS kategori
         FROM artworks a JOIN categories c ON c.id = a.category_id
@@ -71,7 +81,7 @@ export default async function HalamanSubmisiChallenge({ params, searchParams }) 
             </span>
             <h1 className="font-headline text-headline-lg text-light-on-surface">Ikuti: {challenge.title}</h1>
             <p className="text-body-md text-light-on-surface-variant">
-            Pilih satu karya dari portofolio Anda yang memenuhi syarat. Setiap member hanya boleh mengirim satu (1) submisi per challenge.
+            Unggah karya baru langsung di sini{karya.length > 0 ? ", atau pilih karya yang sudah ada di portofolio Anda" : ""}. Setiap member hanya boleh mengirim satu (1) submisi per challenge.
             </p>
         </div>
 
@@ -87,23 +97,60 @@ export default async function HalamanSubmisiChallenge({ params, searchParams }) 
 
         <Pemberitahuan galat={galat} sukses={sukses} />
 
-        {karya.length === 0 ? (
-            <KeadaanKosong
-            ikon={Calendar}
-            judul="Belum ada karya yang memenuhi syarat"
-            deskripsi={
-                kategoriChallenge.length > 0
-                ? "Challenge ini menerima kategori: " + kategoriChallenge.map((k) => k.name).join(", ") + ". Unggah karya dalam kategori tersebut terlebih dahulu."
-                : "Unggah karya terlebih dahulu agar dapat mengikuti challenge ini."
-            }
-            tombol={{ teks: "Unggah Karya", href: "/member/artworks/new" }}
+        <form action={unggahKaryaChallenge} className="space-y-6">
+            <input type="hidden" name="challenge_id" value={challenge.id} />
+            <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-4">
+            <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Unggah Karya Baru</h2>
+            <span className={kelasLabel}>
+                Berkas Gambar Karya <span className="text-danger">*</span>
+            </span>
+            <UnggahGambar
+                nama="file_url"
+                jenis="artworks"
+                wajib
+                judul="Klik untuk mengunggah gambar karya"
+                bantuan="Format didukung: JPG, PNG, WebP, GIF. Ukuran maksimal 5 MB."
             />
-        ) : (
+            </div>
+
+            <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-5">
+            <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Informasi Karya</h2>
+            {kategoriChallenge.length > 0 && (
+                <p className="text-body-sm text-light-on-surface-variant">
+                Challenge ini menerima kategori: {kategoriChallenge.map((k) => k.name).join(", ")}.
+                </p>
+            )}
+            <FormKarya kategori={kategoriForm} />
+            </div>
+
+            <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-3 text-body-sm text-light-on-surface-variant">
+            <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" name="setuju_1" required className="mt-0.5 rounded border-light-outline text-light-primary focus:ring-light-primary" />
+                <span>Saya menyatakan ini adalah karya asli saya dan sesuai dengan ketentuan challenge.</span>
+            </label>
+            {submisiLama && <p>Anda sudah mengirim submisi; karya baru ini akan menggantikannya (karya lama tetap ada di portofolio).</p>}
+            </div>
+
+            <div className="flex items-center justify-end gap-4">
+            <Link href={"/challenges/" + challenge.id} className="px-5 py-2.5 rounded border border-light-outline text-body-sm font-medium hover:bg-warm-cream">
+                Batal
+            </Link>
+            <TombolKirim
+                teksMemuat="Mengunggah..."
+                className="px-6 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors shadow-sm text-body-sm flex items-center gap-2"
+            >
+                <Check className="w-4 h-4" />
+                <span>Unggah &amp; Ikuti Challenge</span>
+            </TombolKirim>
+            </div>
+        </form>
+
+        {karya.length > 0 && (
             <form action={kirimSubmisi} className="space-y-8">
             <input type="hidden" name="challenge_id" value={challenge.id} />
 
             <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-4">
-                <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Pilih Karya dari Portofolio Anda</h2>
+                <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Atau Pilih dari Portofolio Anda</h2>
                 <p className="text-body-sm text-light-on-surface-variant">
                 {kategoriChallenge.length > 0
                     ? "Hanya karya dengan kategori challenge (" + kategoriChallenge.map((k) => k.name).join(", ") + ") yang ditampilkan."

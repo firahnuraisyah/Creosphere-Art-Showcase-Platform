@@ -1,13 +1,15 @@
-    "use server";
+"use server";
 
-    import { revalidatePath } from "next/cache";
-    import pool from "@/lib/db";
-    import { wajibPeran } from "@/lib/auth";
-    import { kembaliGalat, kembaliSukses } from "@/lib/arah";
-    import { bacaTeks, ubahKeId } from "@/lib/validasi";
-    import { hitungStatus } from "@/lib/challenge";
+import { revalidatePath } from "next/cache";
+import pool from "@/lib/db";
+import { wajibPeran } from "@/lib/auth";
+import { kembaliGalat, kembaliSukses } from "@/lib/arah";
+import { bacaTeks, cekUrlUnggahan, ubahKeId } from "@/lib/validasi";
+import { hitungStatus } from "@/lib/challenge";
+import { periksaIsian, simpanTag } from "@/lib/simpanKarya";
+import { jalankanTransaksi, galatPengguna } from "@/lib/transaksi";
 
-    export async function kirimSubmisi(formData) {
+export async function kirimSubmisi(formData) {
     const pengguna = await wajibPeran(["member"]);
 
     const idChallenge = ubahKeId(bacaTeks(formData, "challenge_id"));
@@ -51,4 +53,63 @@
     revalidatePath("/member/submissions");
     revalidatePath("/challenges/" + idChallenge);
     kembaliSukses("/member/submissions", "Karya berhasil diikutkan ke challenge.");
+}
+
+export async function unggahKaryaChallenge(formData) {
+    const pengguna = await wajibPeran(["member"]);
+
+    const idChallenge = ubahKeId(bacaTeks(formData, "challenge_id"));
+    if (!idChallenge) kembaliGalat("/challenges", "Challenge tidak valid.");
+    const kembali = "/challenges/" + idChallenge + "/submit";
+    const urlFile = bacaTeks(formData, "file_url");
+    const galatFile = cekUrlUnggahan(urlFile, "artworks");
+    if (galatFile) kembaliGalat(kembali, "Gambar karya wajib diunggah. " + galatFile);
+    if (formData.get("setuju_1") !== "on") kembaliGalat(kembali, "Anda harus menyetujui pernyataan keaslian karya.");
+
+    let isian;
+    let challenge;
+    let kategoriChallenge;
+    try {
+        isian = await periksaIsian(formData);
+        const ch = await pool.query("SELECT id, start_date, end_date FROM challenges WHERE id = $1", [idChallenge]);
+        challenge = ch.rows[0];
+        const kat = await pool.query("SELECT category_id FROM challenge_categories WHERE challenge_id = $1", [idChallenge]);
+        kategoriChallenge = kat.rows.map((k) => k.category_id);
+    } catch (error) {
+        console.error("unggahKaryaChallenge gagal:", error.message);
+        kembaliGalat(kembali, "Karya gagal dikirim. Coba lagi.");
     }
+    if (isian.galat) kembaliGalat(kembali, isian.galat);
+    if (!challenge) kembaliGalat("/challenges", "Challenge tidak ditemukan.");
+
+    if (hitungStatus(challenge.start_date, challenge.end_date) !== "aktif") {
+        kembaliGalat("/challenges/" + idChallenge, "Challenge ini tidak sedang menerima submisi.");
+    }
+    const { judul, deskripsi, idKategori, jenis, tag } = isian.data;
+    if (kategoriChallenge.length > 0 && !kategoriChallenge.includes(idKategori)) {
+        kembaliGalat(kembali, "Kategori karya tidak diizinkan oleh challenge ini.");
+    }
+
+    const hasil = await jalankanTransaksi(async (klien) => {
+        const baris = await klien.query(
+        `INSERT INTO artworks (user_id, category_id, title, description, artwork_type, file_url)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        [pengguna.id, idKategori, judul, deskripsi, jenis, urlFile]
+        );
+        await simpanTag(klien, baris.rows[0].id, tag);
+        const simpan = await klien.query(
+        `INSERT INTO submissions (challenge_id, user_id, artwork_id) VALUES ($1, $2, $3)
+        ON CONFLICT (challenge_id, user_id) DO UPDATE SET artwork_id = EXCLUDED.artwork_id, created_at = NOW()`,
+        [idChallenge, pengguna.id, baris.rows[0].id]
+        );
+        if (simpan.rowCount === 0) throw galatPengguna("Submisi gagal disimpan.");
+    });
+    if (!hasil.ok) kembaliGalat(kembali, hasil.pesan);
+
+    revalidatePath("/member");
+    revalidatePath("/member/artworks");
+    revalidatePath("/member/submissions");
+    revalidatePath("/artworks");
+    revalidatePath("/challenges/" + idChallenge);
+    kembaliSukses("/member/submissions", "Karya berhasil diunggah dan diikutkan ke challenge.");
+}
