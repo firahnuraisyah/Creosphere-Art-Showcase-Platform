@@ -41,7 +41,7 @@ export default async function Komunitas({ searchParams }) {
     return (
         <main className="flex-1 bg-surface">
         <section aria-label="Judul halaman" className="bg-surface/95 border-b border-outline-variant">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 flex flex-col gap-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex flex-col gap-1.5">
                 <h1 className="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Komunitas Creosphere</h1>
                 <p className="font-body text-body-md text-on-surface-variant max-w-2xl">

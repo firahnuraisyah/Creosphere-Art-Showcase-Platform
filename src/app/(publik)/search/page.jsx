@@ -93,18 +93,6 @@ export default async function HalamanCari({ searchParams }) {
             <KeadaanKosong ikon={SearchX} judul={"Tidak ada hasil untuk “" + q + "”"} deskripsi="Periksa ejaan kata kunci atau coba kata yang lebih umum." />
             )}
 
-            {karya.length > 0 && (
-            <section aria-label="Hasil karya" className="flex flex-col gap-6">
-                <div className="flex items-baseline justify-between gap-4 border-b border-outline-variant pb-3">
-                <h2 className={judulBagian}>Karya</h2>
-                <span className="font-body text-body-sm text-outline tabular-nums">
-                    {formatAngka(karya.length) + " karya"}
-                </span>
-                </div>
-                <Masonry karya={denganRasio(karya)} />
-            </section>
-            )}
-
             {seniman.length > 0 && (
             <section aria-label="Hasil seniman" className="flex flex-col gap-6">
                 <div className="flex items-baseline justify-between gap-4 border-b border-outline-variant pb-3">
@@ -122,6 +110,18 @@ export default async function HalamanCari({ searchParams }) {
                     </Link>
                 ))}
                 </div>
+            </section>
+            )}
+
+            {karya.length > 0 && (
+            <section aria-label="Hasil karya" className="flex flex-col gap-6">
+                <div className="flex items-baseline justify-between gap-4 border-b border-outline-variant pb-3">
+                <h2 className={judulBagian}>Karya</h2>
+                <span className="font-body text-body-sm text-outline tabular-nums">
+                    {formatAngka(karya.length) + " karya"}
+                </span>
+                </div>
+                <Masonry karya={denganRasio(karya)} />
             </section>
             )}
 

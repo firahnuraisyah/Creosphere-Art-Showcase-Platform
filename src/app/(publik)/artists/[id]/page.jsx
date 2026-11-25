@@ -124,20 +124,16 @@ export default async function ProfilSeniman({ params, searchParams }) {
 
         <section id="karya-seniman" aria-label="Karya seniman" className="py-10 lg:py-14">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-                <h2 className="font-headline text-headline-md text-on-surface">Karya Pilihan</h2>
-                <div className="flex items-center gap-4">
-                    <span className="font-body text-body-sm text-outline tabular-nums">{formatAngka(karya.length)} karya</span>
-                    {adalahPemilik && (
-                        <Link
-                            href="/member/artworks"
-                            className="inline-flex items-center justify-center px-4 py-2 rounded-DEFAULT border border-light-outline bg-light-surface text-light-on-surface text-body-sm font-medium hover:bg-warm-cream transition-colors"
-                        >
-                            Edit Karya
-                        </Link>
-                    )}
+            {adalahPemilik && (
+                <div className="flex justify-end mb-8">
+                    <Link
+                        href="/member/artworks"
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-DEFAULT border border-light-outline bg-light-surface text-light-on-surface text-body-sm font-medium hover:bg-warm-cream transition-colors"
+                    >
+                        Edit Karya
+                    </Link>
                 </div>
-            </div>
+            )}
             {karya.length === 0 ? (
                 <KeadaanKosong judul="Belum ada karya" deskripsi="Seniman ini belum mengunggah karya." />
             ) : (

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Trash2, ShieldCheck } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
@@ -72,9 +71,6 @@ export default async function Moderasi({ searchParams }) {
                         </div>
                     ))}
                     <div className="flex items-center justify-end gap-3 pt-3 border-t border-light-outline-variant flex-wrap">
-                        <Link href={"/artworks/" + k.id} className="px-4 py-2 rounded border border-light-outline text-body-sm hover:bg-warm-cream font-medium">
-                        Lihat Karya Asli
-                        </Link>
                         <TombolKonfirmasi
                         aksi={abaikanLaporan}
                         nilai={{ id: k.id }}

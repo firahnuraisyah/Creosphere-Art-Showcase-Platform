@@ -4,6 +4,7 @@ import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 import { inisial } from "@/lib/format";
 import Logo from "@/components/layout/Logo";
 import NavTautan from "@/components/layout/NavTautan";
+import MenuBurger from "@/components/layout/MenuBurger";
 
 const daftarMenu = [
     { href: "/", label: "Beranda" },
@@ -20,7 +21,8 @@ export default async function NavbarPublik() {
     return (
         <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3 md:gap-8">
+            <MenuBurger daftar={daftarMenu} />
             <Logo />
             <nav className="hidden md:flex items-center gap-6" aria-label="Navigasi utama">
                 <NavTautan daftar={daftarMenu} />
@@ -28,7 +30,6 @@ export default async function NavbarPublik() {
             </div>
 
             <div className="flex items-center gap-3">
-            {/* Pencarian global: GET ke /search?q=... (tanpa JavaScript) */}
             <form action="/search" method="GET" role="search" className="hidden lg:flex items-center gap-1.5">
                 <div className="relative flex items-center w-56 xl:w-64">
                 <label htmlFor="cari-navbar" className="sr-only">Cari karya, seniman, kategori, atau challenge</label>
@@ -165,11 +166,6 @@ export default async function NavbarPublik() {
             </div>
         </div>
 
-        <nav className="md:hidden border-t border-outline-variant" aria-label="Navigasi utama (ponsel)">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-6 overflow-x-auto scrollbar-none">
-            <NavTautan daftar={daftarMenu} mobile />
-            </div>
-        </nav>
         </header>
     );
 }
