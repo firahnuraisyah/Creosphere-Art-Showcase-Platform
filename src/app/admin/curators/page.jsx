@@ -6,18 +6,11 @@ import Avatar from "@/components/ui/Avatar";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
 import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
+import { bacaTautan } from "@/lib/tautan";
 import { setujuiCurator, tolakCurator } from "../actions";
 
 export const metadata = { title: "Persetujuan Curator" };
 export const dynamic = "force-dynamic";
-
-function bacaWebsite(teks) {
-    try {
-        return (teks && JSON.parse(teks).website) || "";
-    } catch {
-        return "";
-    }
-}
 
 export default async function PersetujuanCurator({ searchParams }) {
     await wajibPeran(["admin"]);
@@ -44,7 +37,7 @@ export default async function PersetujuanCurator({ searchParams }) {
         ) : (
             <div className="space-y-6">
             {daftar.map((c) => {
-                const website = bacaWebsite(c.external_links);
+                const tautan = bacaTautan(c.external_links);
                 return (
                 <article key={c.id} className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm flex flex-col md:flex-row items-start justify-between gap-6">
                     <div className="flex items-start gap-4">
@@ -57,7 +50,7 @@ export default async function PersetujuanCurator({ searchParams }) {
                         <p className="text-body-sm text-light-on-surface-variant">
                         Email: <strong>{c.email}</strong>
                         {c.country && <> • Negara: {c.country}</>}
-                        {website && <> • Situs web: {website}</>}
+                        {tautan.length > 0 && <> • Tautan: {tautan.map((t) => t.judul + " (" + t.url + ")").join(", ")}</>}
                         {" "}• Mendaftar {formatTanggal(c.created_at)}
                         </p>
                         {c.bio && <p className="text-body-md text-light-on-surface-variant pt-1 max-w-2xl">&ldquo;{c.bio}&rdquo;</p>}

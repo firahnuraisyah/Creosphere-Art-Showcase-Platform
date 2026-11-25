@@ -1,16 +1,18 @@
-    import Link from "next/link";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu } from "@/lib/query";
-    import { kelasInput, kelasLabel } from "@/lib/gaya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import UnggahGambar from "@/components/ui/UnggahGambar";
-    import { simpanProfilCurator } from "../actions";
+import Link from "next/link";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu } from "@/lib/query";
+import { kelasInput, kelasLabel } from "@/lib/gaya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import TombolKirim from "@/components/ui/TombolKirim";
+import UnggahGambar from "@/components/ui/UnggahGambar";
+import FormTautan from "@/components/ui/FormTautan";
+import { bacaTautan, MAKS_TAUTAN } from "@/lib/tautan";
+import { simpanProfilCurator } from "../actions";
 
-    export const metadata = { title: "Profil Curator" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Profil Curator" };
+export const dynamic = "force-dynamic";
 
-    export default async function ProfilCurator({ searchParams }) {
+export default async function ProfilCurator({ searchParams }) {
     const pengguna = await wajibPeran(["curator"], { harusDisetujui: true });
     const { galat, sukses } = await searchParams;
 
@@ -19,12 +21,7 @@
         [pengguna.id]
     )) || {};
 
-    let website = "";
-    try {
-        website = (profil.external_links && JSON.parse(profil.external_links).website) || "";
-    } catch {
-        website = "";
-    }
+    const tautan = bacaTautan(profil.external_links);
 
     return (
         <div className="max-w-4xl space-y-8">
@@ -70,15 +67,16 @@
             <span className="text-xs text-light-on-surface-variant mt-1 block">Maksimal 500 karakter.</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-                <label htmlFor="website" className={kelasLabel}>Situs Web Resmi</label>
-                <input type="url" id="website" name="website" placeholder="https://" defaultValue={website} className={kelasInput} />
+            <label htmlFor="country" className={kelasLabel}>Negara (Opsional)</label>
+            <input type="text" id="country" name="country" maxLength={60} defaultValue={profil.country || ""} className={kelasInput} />
             </div>
-            <div>
-                <label htmlFor="country" className={kelasLabel}>Negara (Opsional)</label>
-                <input type="text" id="country" name="country" maxLength={60} defaultValue={profil.country || ""} className={kelasInput} />
-            </div>
+
+            <div className="space-y-3">
+            <span className={kelasLabel}>
+                Tautan Eksternal <span className="text-xs text-light-on-surface-variant font-normal">(Opsional, maksimal {MAKS_TAUTAN})</span>
+            </span>
+            <FormTautan awal={tautan} maks={MAKS_TAUTAN} />
             </div>
 
             <div className="flex items-center justify-end gap-4 pt-4 border-t border-light-outline-variant">
@@ -92,4 +90,4 @@
         </form>
         </div>
     );
-    }
+}

@@ -7,7 +7,8 @@ import { denganRasio } from "@/lib/ukuranGambar";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
 import { ambilBanyak, ambilSatu } from "@/lib/query";
 import { ubahKeId } from "@/lib/validasi";
-import { formatBulanTahun, formatAngka } from "@/lib/format";
+import { formatTahun, formatAngka } from "@/lib/format";
+import { bacaTautan } from "@/lib/tautan";
 
 export const dynamic = "force-dynamic";
 
@@ -18,22 +19,13 @@ export async function generateMetadata({ params }) {
     return { title: s ? s.display_name : "Profil Seniman" };
 }
 
-function bacaTautan(teks) {
-    try {
-        const data = JSON.parse(teks || "{}");
-        return data && typeof data === "object" ? data : {};
-    } catch {
-        return {};
-    }
-}
-
 export default async function ProfilSeniman({ params }) {
     const { id } = await params;
     const idSeniman = ubahKeId(id);
     if (!idSeniman) notFound();
 
     const s = await ambilSatu(
-        `SELECT id, display_name, is_active, avatar_url, headline, bio, country, external_links, created_at,
+        `SELECT id, display_name, is_active, avatar_url, bio, country, external_links, created_at,
                 (SELECT COUNT(*) FROM artworks a WHERE a.user_id = users.id) AS jumlah_karya,
                 (SELECT COUNT(*) FROM likes l JOIN artworks a ON a.id = l.artwork_id WHERE a.user_id = users.id) AS jumlah_like,
                 (SELECT COUNT(*) FROM submissions sb WHERE sb.user_id = users.id) AS jumlah_challenge
@@ -50,12 +42,7 @@ export default async function ProfilSeniman({ params }) {
         WHERE a.user_id = $1 ORDER BY a.created_at DESC`,
         [idSeniman]
     );
-    const tautan = bacaTautan(s.external_links);
-    const daftarTautan = [
-        { kunci: "instagram", judul: "Instagram" },
-        { kunci: "behance", judul: "Behance" },
-        { kunci: "website", judul: "Situs Pribadi" },
-    ].filter((t) => typeof tautan[t.kunci] === "string" && /^https?:\/\//.test(tautan[t.kunci]));
+    const daftarTautan = bacaTautan(s.external_links);
 
     const meta = "font-label text-label-md text-outline";
 
@@ -72,7 +59,6 @@ export default async function ProfilSeniman({ params }) {
                     {!s.is_active && (
                     <span className="self-start inline-flex px-2.5 py-0.5 rounded-full bg-slate-900 text-white text-label-sm font-medium">Akun nonaktif</span>
                     )}
-                    {s.headline && <p className="font-body text-body-md text-outline">{s.headline}</p>}
                     {s.country && (
                     <div className="flex items-center gap-1.5 pt-1">
                         <Globe className="w-[18px] h-[18px] text-outline" aria-hidden="true" />
@@ -83,32 +69,32 @@ export default async function ProfilSeniman({ params }) {
                 </div>
 
                 <div className="lg:col-span-7 flex flex-col gap-6">
-                <div className="font-body text-body-md lg:text-body-lg text-on-surface-variant max-w-prose text-pretty space-y-3">
-                    {s.bio ? s.bio.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>) : <p>Seniman ini belum menulis bio.</p>}
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-4 border-t border-outline-variant">
-                    <div className="flex flex-col gap-0.5">
-                    <span className={meta}>Bergabung di Creosphere</span>
-                    <span className="font-body text-body-md text-on-surface tabular-nums">Sejak {formatBulanTahun(s.created_at)}</span>
+                {s.bio && (
+                    <div className="font-body text-body-md lg:text-body-lg text-on-surface-variant max-w-prose text-pretty space-y-3">
+                    {s.bio.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>)}
                     </div>
+                )}
+
+                <div className={"grid grid-cols-2 gap-6 pt-4 border-t border-outline-variant " + (daftarTautan.length > 0 ? "sm:grid-cols-3" : "")}>
+                    {daftarTautan.length > 0 && (
+                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-0.5">
+                        <span className={meta}>Tautan Eksternal</span>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {daftarTautan.map((t, i) => (
+                            <a key={i} href={t.url} target="_blank" rel="noopener noreferrer" className="font-label text-label-lg text-on-surface hover:underline">
+                            {t.judul}
+                            </a>
+                        ))}
+                        </div>
+                    </div>
+                    )}
                     <div className="flex flex-col gap-0.5">
                     <span className={meta}>Karya Terbit</span>
                     <span className="font-body text-body-md text-on-surface tabular-nums">{formatAngka(s.jumlah_karya)} karya</span>
                     </div>
-                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-0.5">
-                    <span className={meta}>Tautan Eksternal</span>
-                    {daftarTautan.length > 0 ? (
-                        <div className="flex flex-wrap items-center gap-3">
-                        {daftarTautan.map(({ kunci, judul }) => (
-                            <a key={kunci} href={tautan[kunci]} target="_blank" rel="noopener noreferrer" className="font-label text-label-lg text-on-surface hover:underline">
-                            {judul}
-                            </a>
-                        ))}
-                        </div>
-                    ) : (
-                        <span className="font-body text-body-md text-outline">Belum ada</span>
-                    )}
+                    <div className="flex flex-col gap-0.5 sm:items-end sm:text-right">
+                    <span className={meta}>Bergabung</span>
+                    <span className="font-body text-body-md text-on-surface tabular-nums">Sejak {formatTahun(s.created_at)}</span>
                     </div>
                 </div>
                 </div>

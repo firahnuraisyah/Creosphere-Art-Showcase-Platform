@@ -1,31 +1,25 @@
-    import Link from "next/link";
-    import { AtSign, Palette, Globe, Info } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu } from "@/lib/query";
-    import { daftarNegara } from "@/lib/negara";
-    import { kelasInput, kelasLabel } from "@/lib/gaya";
-    import Pemberitahuan from "@/components/ui/Pemberitahuan";
-    import UnggahGambar from "@/components/ui/UnggahGambar";
-    import TombolKirim from "@/components/ui/TombolKirim";
-    import { simpanProfil } from "./actions";
+import Link from "next/link";
+import { Info } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu } from "@/lib/query";
+import { daftarNegara } from "@/lib/negara";
+import { kelasInput, kelasLabel } from "@/lib/gaya";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import UnggahGambar from "@/components/ui/UnggahGambar";
+import TombolKirim from "@/components/ui/TombolKirim";
+import FormTautan from "@/components/ui/FormTautan";
+import { bacaTautan, MAKS_TAUTAN } from "@/lib/tautan";
+import { simpanProfil } from "./actions";
 
-    export const metadata = { title: "Edit Profil" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Edit Profil" };
+export const dynamic = "force-dynamic";
 
-    function bacaTautan(teks) {
-    try {
-        return JSON.parse(teks) || {};
-    } catch {
-        return {};
-    }
-    }
-
-    export default async function HalamanEditProfil({ searchParams }) {
+export default async function HalamanEditProfil({ searchParams }) {
     const pengguna = await wajibPeran(["member"]);
     const { galat, sukses } = await searchParams;
 
     const profil = await ambilSatu(
-        "SELECT display_name, headline, bio, country, external_links, avatar_url FROM users WHERE id = $1",
+        "SELECT display_name, bio, country, external_links, avatar_url FROM users WHERE id = $1",
         [pengguna.id]
     );
     const tautan = bacaTautan(profil?.external_links);
@@ -71,21 +65,6 @@
             </div>
 
             <div>
-                <label htmlFor="headline" className={kelasLabel}>
-                Judul Singkat <span className="text-xs text-light-on-surface-variant font-normal">(Opsional)</span>
-                </label>
-                <input
-                type="text"
-                id="headline"
-                name="headline"
-                defaultValue={profil?.headline || ""}
-                maxLength={100}
-                placeholder="mis. Pelukis Botani"
-                className={kelasInput}
-                />
-            </div>
-
-            <div>
                 <label htmlFor="bio" className={kelasLabel}>
                 Biografi
                 </label>
@@ -123,46 +102,10 @@
             </div>
 
             <div className="space-y-3 pt-2">
-                <label className="block text-label-lg text-light-on-surface font-medium">Portofolio &amp; Tautan Sosial</label>
-                <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-light-on-surface-variant">
-                    <AtSign className="w-4 h-4" />
+                <span className={kelasLabel}>
+                Tautan Eksternal <span className="text-xs text-light-on-surface-variant font-normal">(Opsional, maksimal {MAKS_TAUTAN})</span>
                 </span>
-                <input
-                    type="url"
-                    name="instagram"
-                    defaultValue={tautan.instagram || ""}
-                    placeholder="URL Instagram"
-                    aria-label="URL Instagram"
-                    className="w-full pl-10 pr-3.5 py-2.5 rounded-DEFAULT bg-light-surface border border-light-outline text-body-sm text-light-on-surface"
-                />
-                </div>
-                <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-light-on-surface-variant">
-                    <Palette className="w-4 h-4" />
-                </span>
-                <input
-                    type="url"
-                    name="behance"
-                    defaultValue={tautan.behance || ""}
-                    placeholder="URL Behance"
-                    aria-label="URL Behance"
-                    className="w-full pl-10 pr-3.5 py-2.5 rounded-DEFAULT bg-light-surface border border-light-outline text-body-sm text-light-on-surface"
-                />
-                </div>
-                <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-light-on-surface-variant">
-                    <Globe className="w-4 h-4" />
-                </span>
-                <input
-                    type="url"
-                    name="website"
-                    defaultValue={tautan.website || ""}
-                    placeholder="URL Situs Web"
-                    aria-label="URL Situs Web"
-                    className="w-full pl-10 pr-3.5 py-2.5 rounded-DEFAULT bg-light-surface border border-light-outline text-body-sm text-light-on-surface"
-                />
-                </div>
+                <FormTautan awal={tautan} maks={MAKS_TAUTAN} />
             </div>
             </div>
 
@@ -183,4 +126,4 @@
         </form>
         </div>
     );
-    }
+}

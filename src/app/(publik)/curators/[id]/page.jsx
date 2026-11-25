@@ -8,6 +8,7 @@ import { ambilBanyak, ambilSatu } from "@/lib/query";
 import { ubahKeId } from "@/lib/validasi";
 import { formatBulanTahun, formatAngka, formatTanggalPendek } from "@/lib/format";
 import { hitungStatus, labelStatus, sisaHari } from "@/lib/challenge";
+import { bacaTautan } from "@/lib/tautan";
 
 export const dynamic = "force-dynamic";
 
@@ -19,22 +20,6 @@ export async function generateMetadata({ params }) {
     const c = idAngka ? await ambilSatu("SELECT display_name FROM users WHERE id = $1 AND " + SYARAT_TAMPIL, [idAngka]) : null;
     return { title: c ? c.display_name : "Profil Curator" };
 }
-
-function bacaTautan(teks) {
-    try {
-        const data = JSON.parse(teks || "{}");
-        return data && typeof data === "object" ? data : {};
-    } catch {
-        return {};
-    }
-}
-
-const urutanStatus = { aktif: 0, belum_mulai: 1, berakhir: 2 };
-const kelasStatus = {
-    aktif: "bg-success-container text-on-success-container",
-    belum_mulai: "bg-info-container text-on-info-container",
-    berakhir: "bg-surface text-on-surface-variant border border-outline-variant",
-};
 
 export default async function ProfilCurator({ params }) {
     const { id } = await params;
@@ -58,16 +43,12 @@ export default async function ProfilCurator({ params }) {
         ORDER BY ch.start_date DESC`,
         [idCurator]
     );
+    
     const challenge = baris
         .map((x) => ({ ...x, status: hitungStatus(x.start_date, x.end_date) }))
         .sort((a, b) => urutanStatus[a.status] - urutanStatus[b.status]);
 
-    const tautan = bacaTautan(c.external_links);
-    const daftarTautan = [
-        { kunci: "instagram", judul: "Instagram" },
-        { kunci: "behance", judul: "Behance" },
-        { kunci: "website", judul: "Situs Pribadi" },
-    ].filter((t) => typeof tautan[t.kunci] === "string" && /^https?:\/\//i.test(tautan[t.kunci]));
+    const daftarTautan = bacaTautan(c.external_links);
 
     const meta = "font-label text-label-md text-outline";
     const subjudul = [c.headline, c.affiliation, c.specialization].filter(Boolean);
@@ -118,9 +99,9 @@ export default async function ProfilCurator({ params }) {
                     <span className={meta}>Tautan Eksternal</span>
                     {daftarTautan.length > 0 ? (
                         <div className="flex flex-wrap items-center gap-3">
-                        {daftarTautan.map(({ kunci, judul }) => (
-                            <a key={kunci} href={tautan[kunci]} target="_blank" rel="noopener noreferrer" className="font-label text-label-lg text-on-surface hover:underline">
-                            {judul}
+                        {daftarTautan.map((t, i) => (
+                            <a key={i} href={t.url} target="_blank" rel="noopener noreferrer" className="font-label text-label-lg text-on-surface hover:underline">
+                            {t.judul}
                             </a>
                         ))}
                         </div>
