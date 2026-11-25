@@ -74,6 +74,14 @@ export async function buatChallenge(formData) {
     const { data, galat } = bacaChallenge(formData);
     if (galat) kembaliGalat("/curator/challenges/new", galat);
 
+    const duplikat = await ambilSatu(
+        "SELECT id FROM challenges WHERE curator_id = $1 AND LOWER(TRIM(title)) = LOWER(TRIM($2))",
+        [pengguna.id, data.title]
+    );
+    if (duplikat) {
+        kembaliGalat("/curator/challenges/new", "Anda sudah memiliki challenge dengan nama yang sama. Gunakan nama lain.");
+    }
+
     const hasil = await jalankanTransaksi(async (klien) => {
         const baru = await klien.query(
         `INSERT INTO challenges (curator_id, title, tagline, description, rules, prize, banner_url, start_date, end_date)
@@ -109,6 +117,14 @@ export async function ubahChallenge(formData) {
         kunci: statusLama === "berakhir" ? "semua" : statusLama === "aktif" ? "mulai" : "",
     });
     if (galat) kembaliGalat(halamanUbah, galat);
+
+    const duplikat = await ambilSatu(
+        "SELECT id FROM challenges WHERE curator_id = $1 AND LOWER(TRIM(title)) = LOWER(TRIM($2)) AND id <> $3",
+        [pengguna.id, data.title, id]
+    );
+    if (duplikat) {
+        kembaliGalat(halamanUbah, "Anda sudah memiliki challenge lain dengan nama yang sama. Gunakan nama lain.");
+    }
 
     const hasil = await jalankanTransaksi(async (klien) => {
         await klien.query(
@@ -246,5 +262,6 @@ export async function simpanProfilCurator(formData) {
     if (lama && lama.avatar_url && lama.avatar_url !== avatar) await hapusFileLama(lama.avatar_url);
 
     revalidatePath("/curator", "layout");
-    kembaliSukses("/curator/profile", "Profil curator berhasil diperbarui.");
+    revalidatePath("/curators/" + pengguna.id);
+    kembaliSukses("/curators/" + pengguna.id, "Profil curator berhasil diperbarui.");
 }

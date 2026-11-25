@@ -1,8 +1,5 @@
 import Link from "next/link";
-import {
-    Search, Plus, ChevronDown, LayoutDashboard, Palette, Upload,
-    Bookmark, Trophy, UserCog, PlusCircle, Building2, Clock, User, LogOut,
-} from "lucide-react";
+import { Search, Plus, ChevronDown } from "lucide-react";
 import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 import { inisial } from "@/lib/format";
 import Logo from "@/components/layout/Logo";
@@ -96,68 +93,52 @@ export default async function NavbarPublik() {
                         <span className="text-xs text-light-on-surface-variant">{labelPeran[pengguna.role]}</span>
                     </div>
                     {pengguna.role === "admin" && (
-                        <Link href={dashboard} className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                        <LayoutDashboard className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href={dashboard} className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                         Dashboard
                         </Link>
                     )}
                     {pengguna.role === "member" && (
                         <>
-                        <Link href="/member/artworks" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Palette className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/member/artworks" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Karya Saya
                         </Link>
-                        <Link href="/member/artworks/new" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Upload className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/member/artworks/new" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Unggah Karya
                         </Link>
-                        <Link href="/member/favorites" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Bookmark className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/member/favorites" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Favorit Saya
                         </Link>
-                        <Link href="/member/submissions" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Trophy className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/member/submissions" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Submisi Saya
                         </Link>
-                        <Link href="/member/profile" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <UserCog className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/member/profile" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Edit Profil
                         </Link>
-                        <Link href={"/artists/" + pengguna.id} className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <User className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href={"/artists/" + pengguna.id} className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Profil Publik Saya
                         </Link>
                         </>
                     )}
                     {pengguna.role === "curator" && pengguna.status === "approved" && (
                         <>
-                        <Link href="/curator/challenges" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Trophy className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href={"/curators/" + pengguna.id} className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
+                            Profil
+                        </Link>
+                        <Link href="/curator/challenges" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Challenge Saya
                         </Link>
-                        <Link href="/curator/challenges/new" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <PlusCircle className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/curator/challenges/new" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                             Buat Challenge
-                        </Link>
-                        <Link href="/curator/profile" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <Building2 className="w-4 h-4 text-light-on-surface-variant" />
-                            Profil Curator
-                        </Link>
-                        <Link href={"/curators/" + pengguna.id} className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                            <User className="w-4 h-4 text-light-on-surface-variant" />
-                            Profil Publik Saya
                         </Link>
                         </>
                     )}
                     {pengguna.role === "curator" && pengguna.status !== "approved" && (
-                        <Link href="/curator/pending" className="flex items-center gap-2.5 px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
-                        <Clock className="w-4 h-4 text-light-on-surface-variant" />
+                        <Link href="/curator/pending" className="block px-4 py-2 text-body-sm text-light-on-surface hover:bg-warm-cream">
                         Status Akun Curator
                         </Link>
                     )}
                     <form action="/api/logout" method="POST" className="border-t border-light-outline-variant mt-2 pt-2">
-                        <button type="submit" className="w-full flex items-center gap-2.5 px-4 py-2 text-body-sm text-danger hover:bg-rose-50">
-                        <LogOut className="w-4 h-4" />
+                        <button type="submit" className="w-full text-left px-4 py-2 text-body-sm text-danger hover:bg-rose-50">
                         Keluar
                         </button>
                     </form>

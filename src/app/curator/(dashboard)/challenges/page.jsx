@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Edit3, Trophy } from "lucide-react";
+import { Edit3, Trophy } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
 import { hitungStatus, sisaHari } from "@/lib/challenge";
@@ -29,17 +29,11 @@ export default async function ChallengeSaya({ searchParams }) {
 
     return (
         <div className="max-w-7xl space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-light-outline-variant">
-            <div>
+        <div className="pb-6 border-b border-light-outline-variant">
             <h1 className="font-headline text-headline-lg text-light-on-surface">Challenge yang Saya Buat ({daftar.length})</h1>
             <p className="text-body-md text-light-on-surface-variant">
                 Pantau status challenge, lihat karya yang masuk, dan pilih hingga 3 pemenang setelah challenge selesai.
             </p>
-            </div>
-            <Link href="/curator/challenges/new" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            <span>Buat Challenge Baru</span>
-            </Link>
         </div>
 
         <Pemberitahuan galat={galat} sukses={sukses} />
@@ -48,8 +42,7 @@ export default async function ChallengeSaya({ searchParams }) {
             <KeadaanKosong
             ikon={Trophy}
             judul="Belum ada challenge"
-            deskripsi="Buat challenge pertama Anda untuk mengundang para seniman berkarya."
-            tombol={{ teks: "Buat Challenge", href: "/curator/challenges/new" }}
+            deskripsi="Buat challenge pertama Anda melalui menu Buat Challenge di subnavbar untuk mengundang para seniman berkarya."
             />
         ) : (
             <div className="bg-light-surface rounded-xl border border-light-outline-variant overflow-hidden shadow-sm">

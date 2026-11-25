@@ -1,10 +1,12 @@
-import TombolKembali from "@/components/layout/TombolKembali";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Globe, Clock, CalendarDays } from "lucide-react";
+import { ArrowLeft, Globe, Clock, CalendarDays } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
+import Pemberitahuan from "@/components/ui/Pemberitahuan";
+import SubNavbarPeran from "@/components/layout/SubNavbarPeran";
 import { ambilBanyak, ambilSatu } from "@/lib/query";
+import { ambilPengguna } from "@/lib/auth";
 import { ubahKeId } from "@/lib/validasi";
 import { formatBulanTahun, formatAngka, formatTanggalPendek } from "@/lib/format";
 import { hitungStatus, labelStatus, sisaHari } from "@/lib/challenge";
@@ -31,10 +33,13 @@ export async function generateMetadata({ params }) {
     return { title: c ? c.display_name : "Profil Curator" };
 }
 
-export default async function ProfilCurator({ params }) {
+export default async function ProfilCurator({ params, searchParams }) {
     const { id } = await params;
+    const { sukses } = await searchParams;
     const idCurator = ubahKeId(id);
     if (!idCurator) notFound();
+
+    const pengguna = await ambilPengguna();
 
     const c = await ambilSatu(
         `SELECT id, display_name, is_active, avatar_url, headline, bio, country, external_links, specialization, affiliation, created_at,
@@ -62,12 +67,31 @@ export default async function ProfilCurator({ params }) {
 
     const meta = "font-label text-label-md text-outline";
     const subjudul = [c.headline, c.affiliation, c.specialization].filter(Boolean);
+    const adalahPemilik = Boolean(pengguna && pengguna.role === "curator" && pengguna.id === c.id);
 
     return (
         <main className="flex-1 bg-surface">
+        {adalahPemilik && <SubNavbarPeran tema="curator" idPengguna={pengguna.id} />}
         <section aria-label="Profil curator" className="bg-surface/95 border-b border-outline-variant">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-            <div className="mb-8"><TombolKembali bawaan={{ href: "/artists?peran=curator", label: "Komunitas" }} /></div>
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-1.5 font-label text-label-lg text-on-surface-variant hover:text-on-surface hover:underline underline-offset-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                    <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                    <span>Kembali ke Beranda</span>
+                </Link>
+                {adalahPemilik && (
+                    <Link
+                        href="/curator/profile"
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-DEFAULT bg-light-primary text-light-on-primary text-body-sm font-medium hover:bg-primary-hover transition-colors shadow-sm"
+                    >
+                        Edit Profil
+                    </Link>
+                )}
+            </div>
+            {sukses && <div className="mb-6"><Pemberitahuan sukses={sukses} /></div>}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 <div className="lg:col-span-5 flex items-start gap-5">
                 <Avatar nama={c.display_name} src={c.avatar_url} ukuran="w-20 h-20 sm:w-24 sm:h-24 shrink-0" teks="text-3xl" />

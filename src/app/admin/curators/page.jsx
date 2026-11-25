@@ -17,7 +17,7 @@ export default async function PersetujuanCurator({ searchParams }) {
     const { galat, sukses } = await searchParams;
 
     const daftar = await ambilBanyak(
-        `SELECT id, display_name, email, country, bio, external_links, avatar_url, created_at
+        `SELECT id, display_name, email, country, bio, external_links, avatar_url, cv_url, portfolio_url, created_at
         FROM users WHERE role = 'curator' AND status = 'pending' ORDER BY display_name ASC`
     );
 
@@ -54,6 +54,20 @@ export default async function PersetujuanCurator({ searchParams }) {
                         {" "}• Mendaftar {formatTanggal(c.created_at)}
                         </p>
                         {c.bio && <p className="text-body-md text-light-on-surface-variant pt-1 max-w-2xl">&ldquo;{c.bio}&rdquo;</p>}
+                        {(c.cv_url || c.portfolio_url) && (
+                        <div className="flex flex-wrap items-center gap-3 pt-1 text-body-sm">
+                            {c.cv_url && (
+                            <a href={c.cv_url} target="_blank" rel="noopener noreferrer" className="text-light-primary font-medium hover:underline">
+                                Lihat CV
+                            </a>
+                            )}
+                            {c.portfolio_url && (
+                            <a href={c.portfolio_url} target="_blank" rel="noopener noreferrer" className="text-light-primary font-medium hover:underline">
+                                Lihat Portofolio
+                            </a>
+                            )}
+                        </div>
+                        )}
                     </div>
                     </div>
                     <div className="flex items-center gap-3 self-end md:self-center">
