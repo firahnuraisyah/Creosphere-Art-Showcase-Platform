@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, LogOut } from "lucide-react";
 import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 import { inisial } from "@/lib/format";
 import Logo from "@/components/layout/Logo";
@@ -29,7 +29,8 @@ export default async function NavbarPublik() {
 
             <div className="flex items-center gap-3">
             {/* Pencarian global: GET ke /search?q=... (tanpa JavaScript) */}
-            <form action="/search" method="GET" role="search" className="relative hidden lg:flex items-center w-64">
+            <form action="/search" method="GET" role="search" className="hidden lg:flex items-center gap-1.5">
+                <div className="relative flex items-center w-56 xl:w-64">
                 <label htmlFor="cari-navbar" className="sr-only">Cari karya, seniman, kategori, atau challenge</label>
                 <Search className="w-[18px] h-[18px] text-outline absolute left-3 pointer-events-none" aria-hidden="true" />
                 <input
@@ -37,14 +38,44 @@ export default async function NavbarPublik() {
                 placeholder="Cari karya, seniman, challenge..."
                 className="w-full h-10 pl-9 pr-3 rounded bg-surface-container-low border border-border-input text-body-sm text-on-surface placeholder:text-outline focus:bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container focus:outline-none transition-colors duration-state-change"
                 />
+                </div>
+                <button
+                type="submit"
+                className="h-10 px-3 rounded bg-surface-container-low border border-border-input font-label text-label-lg text-on-surface hover:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors duration-state-change"
+                >
+                Cari
+                </button>
             </form>
-            <Link
-                href="/search"
-                className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded text-on-surface-variant hover:bg-surface-container transition-colors duration-state-change"
+            <details className="lg:hidden">
+                <summary
+                className="inline-flex items-center justify-center w-10 h-10 rounded text-on-surface-variant hover:bg-surface-container transition-colors duration-state-change cursor-pointer list-none [&::-webkit-details-marker]:hidden"
                 aria-label="Cari"
-            >
+                >
                 <Search className="w-5 h-5" />
-            </Link>
+                </summary>
+                <div className="absolute left-0 right-0 top-full z-50 bg-surface border-b border-outline-variant shadow-md px-4 sm:px-6 py-3">
+                <form action="/search" method="GET" role="search" className="max-w-7xl mx-auto flex items-center gap-2">
+                    <div className="relative flex-1 flex items-center">
+                    <label htmlFor="cari-navbar-mobile" className="sr-only">Cari karya, seniman, kategori, atau challenge</label>
+                    <Search className="w-[18px] h-[18px] text-outline absolute left-3 pointer-events-none" aria-hidden="true" />
+                    <input
+                        id="cari-navbar-mobile"
+                        type="search"
+                        name="q"
+                        maxLength={100}
+                        placeholder="Cari karya, seniman, challenge..."
+                        className="w-full h-10 pl-9 pr-3 rounded bg-surface-container-low border border-border-input text-body-sm text-on-surface placeholder:text-outline focus:bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container focus:outline-none transition-colors duration-state-change"
+                    />
+                    </div>
+                    <button
+                    type="submit"
+                    className="h-10 px-4 rounded bg-primary text-on-primary font-label text-label-lg hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors duration-state-change shrink-0"
+                    >
+                    Cari
+                    </button>
+                </form>
+                </div>
+            </details>
 
             {!pengguna && (
                 <>
@@ -122,8 +153,9 @@ export default async function NavbarPublik() {
                         </Link>
                     )}
                     <form action="/api/logout" method="POST" className="border-t border-light-outline-variant mt-2 pt-2">
-                        <button type="submit" className="w-full text-left px-4 py-2 text-body-sm text-danger hover:bg-rose-50">
-                        Keluar
+                        <button type="submit" className="w-full text-left px-4 py-2 text-body-sm text-danger hover:bg-rose-50 flex items-center gap-2">
+                        <LogOut className="w-4 h-4" />
+                        <span>Keluar</span>
                         </button>
                     </form>
                     </div>

@@ -1,14 +1,14 @@
-    import Link from "next/link";
-    import { User, Image as IkonGambar, AlertCircle, Trophy, UserCheck, ShieldAlert } from "lucide-react";
-    import { wajibPeran } from "@/lib/auth";
-    import { ambilSatu, ambilBanyak } from "@/lib/query";
-    import { hitungStatus } from "@/lib/challenge";
-    import { formatAngka, formatTanggal, formatTanggalPendek } from "@/lib/format";
+import Link from "next/link";
+import { User, Image as IkonGambar, AlertCircle, Trophy, UserCheck, ShieldAlert } from "lucide-react";
+import { wajibPeran } from "@/lib/auth";
+import { ambilSatu, ambilBanyak } from "@/lib/query";
+import { hitungStatus } from "@/lib/challenge";
+import { formatAngka, formatTanggal } from "@/lib/format";
 
-    export const metadata = { title: "Dashboard Admin" };
-    export const dynamic = "force-dynamic";
+export const metadata = { title: "Dashboard Admin" };
+export const dynamic = "force-dynamic";
 
-    export default async function DashboardAdmin() {
+export default async function DashboardAdmin() {
     await wajibPeran(["admin"]);
 
     const angka =
@@ -30,17 +30,6 @@
     );
     const laporanPertama = await ambilSatu(
         `SELECT r.reason, r.artwork_id FROM reports r WHERE r.status = 'pending' ORDER BY r.created_at DESC LIMIT 1`
-    );
-    const aktivitas = await ambilBanyak(
-        `SELECT * FROM (
-        SELECT 'challenge' AS jenis, u.display_name AS pelaku, c.title AS objek, c.created_at AS waktu
-            FROM challenges c JOIN users u ON u.id = c.curator_id
-        UNION ALL
-        SELECT 'pengguna', u.role, u.display_name, u.created_at FROM users u WHERE u.role <> 'admin'
-        UNION ALL
-        SELECT 'laporan', ur.display_name, a.title, r.created_at
-            FROM reports r JOIN artworks a ON a.id = r.artwork_id JOIN users ur ON ur.id = r.reporter_id
-        ) log ORDER BY waktu DESC LIMIT 6`
     );
 
     const nol = (n) => formatAngka(n || 0);
@@ -68,7 +57,7 @@
 
             <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm">
             <span className="text-xs uppercase tracking-wider text-light-on-surface-variant font-medium block mb-1">Curator (Disetujui / Menunggu)</span>
-            <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline justify-between gap-2 flex-wrap">
                 <span className="font-headline text-3xl font-bold text-olive">{nol(angka.curator_setuju)}</span>
                 <span className="px-2 py-0.5 rounded-full bg-amber-50 text-warning border border-amber-200 text-xs font-bold">{nol(angka.curator_pending)} Menunggu</span>
             </div>
@@ -81,7 +70,7 @@
             <span className="text-xs uppercase tracking-wider text-light-on-surface-variant font-medium block mb-1">Total Karya Terbit</span>
             <div className="flex items-baseline justify-between">
                 <span className="font-headline text-3xl font-bold text-light-on-surface">{nol(angka.karya)}</span>
-                <IkonGambar className="w-5 h-5 text-sand" />
+                <IkonGambar className="w-5 h-5 text-terracotta" />
             </div>
             <Link href="/admin/moderation" className="text-xs text-danger font-medium hover:underline mt-2 flex items-center gap-1">
                 <AlertCircle className="w-3.5 h-3.5" />
@@ -93,7 +82,7 @@
             <span className="text-xs uppercase tracking-wider text-light-on-surface-variant font-medium block mb-1">Challenge Aktif</span>
             <div className="flex items-baseline justify-between">
                 <span className="font-headline text-3xl font-bold text-success">{formatAngka(challengeAktif)}</span>
-                <Trophy className="w-5 h-5 text-success" />
+                <Trophy className="w-5 h-5 text-amber-600" />
             </div>
             <span className="text-xs text-light-on-surface-variant mt-2 block">Dihitung dari tanggal server</span>
             </div>
@@ -101,9 +90,9 @@
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-headline text-title-lg font-bold text-light-on-surface flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-olive" />
+                <UserCheck className="w-5 h-5 text-warning" />
                 <span>Antrean Verifikasi Curator</span>
                 </h2>
                 <span className="text-xs text-warning font-semibold">{nol(angka.curator_pending)} Permintaan Menunggu</span>
@@ -112,7 +101,7 @@
                 Organisasi dan kolektif budaya independen yang menunggu tinjauan admin sebelum membuat challenge.
             </p>
             {curatorPertama ? (
-                <div className="p-3 bg-warm-cream rounded-lg border border-sand flex items-center justify-between text-body-sm">
+                <div className="p-3 bg-warm-cream rounded-lg border border-sand flex flex-wrap items-center justify-between gap-3 text-body-sm">
                 <div>
                     <strong>{curatorPertama.display_name}</strong>
                     <span className="text-xs text-light-on-surface-variant block">Mendaftar {formatTanggal(curatorPertama.created_at)}</span>
@@ -127,7 +116,7 @@
             </div>
 
             <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-headline text-title-lg font-bold text-light-on-surface flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-danger" />
                 <span>Antrean Moderasi Karya</span>
@@ -138,7 +127,7 @@
                 Laporan member yang perlu ditinjau. Abaikan laporan atau jalankan Take Down yang menghapus seluruh data terkait.
             </p>
             {laporanPertama ? (
-                <div className="p-3 bg-rose-50 rounded-lg border border-rose-200 flex items-center justify-between text-body-sm">
+                <div className="p-3 bg-rose-50 rounded-lg border border-rose-200 flex flex-wrap items-center justify-between gap-3 text-body-sm">
                 <div>
                     <strong className="text-danger">{laporanPertama.reason}</strong>
                     <span className="text-xs text-light-on-surface-variant block">Dilaporkan pada karya #{laporanPertama.artwork_id}</span>
@@ -152,26 +141,6 @@
             )}
             </div>
         </div>
-
-        <div className="bg-light-surface rounded-xl border border-light-outline-variant p-6 space-y-4">
-            <h2 className="font-headline text-title-lg font-bold text-light-on-surface">Aktivitas Platform Terbaru</h2>
-            {aktivitas.length === 0 ? (
-            <p className="text-body-sm text-light-on-surface-variant">Belum ada aktivitas.</p>
-            ) : (
-            <div className="divide-y divide-light-outline-variant text-body-sm">
-                {aktivitas.map((a, i) => (
-                <div key={i} className="py-3 flex items-center justify-between gap-4">
-                    <span className="text-light-on-surface">
-                    {a.jenis === "challenge" && (<>Curator <strong>{a.pelaku}</strong> membuat challenge <em>{a.objek}</em>.</>)}
-                    {a.jenis === "pengguna" && (<><strong>{a.objek}</strong> bergabung sebagai {a.pelaku === "curator" ? "curator" : "member"}.</>)}
-                    {a.jenis === "laporan" && (<><strong>{a.pelaku}</strong> melaporkan karya <em>{a.objek}</em>.</>)}
-                    </span>
-                    <span className="text-xs text-light-on-surface-variant shrink-0">{formatTanggalPendek(a.waktu)}</span>
-                </div>
-                ))}
-            </div>
-            )}
-        </div>
         </div>
     );
-    }
+}

@@ -20,8 +20,8 @@ export async function ambilPengguna() {
 export function tujuanDashboard(role, status, aktif = true) {
     if (aktif === false) return "/nonaktif";
     if (role === "admin") return "/admin";
-    if (role === "curator") return status === "approved" ? "/curator/challenges" : "/curator/pending";
-    return "/member/artworks";
+    if (role === "curator" && status !== "approved") return "/curator/pending";
+    return "/";
 }
 
 export async function wajibPeran(peranDiizinkan, { harusDisetujui = false } = {}) {

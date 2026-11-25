@@ -105,9 +105,6 @@ export default async function Beranda() {
 
             <div className="lg:absolute lg:inset-0 flex items-center justify-center pointer-events-none">
                 <div className="pointer-events-auto w-full max-w-xl lg:max-w-[40%] py-8 lg:py-10 px-4 text-center flex flex-col items-center justify-center gap-4 lg:gap-5">
-                <span className="font-label text-label-md text-on-primary-container bg-primary-container px-3 py-1 rounded-full">
-                    Pameran Seni Global
-                </span>
                 <h1 className="font-display text-display-lg-mobile lg:text-display-lg text-on-surface text-balance">
                     Ruang Global untuk Suara-Suara Kreatif
                 </h1>

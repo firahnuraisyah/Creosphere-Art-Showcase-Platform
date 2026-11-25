@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import NavbarPublik from "@/components/layout/NavbarPublik";
+import TombolKembali from "@/components/layout/TombolKembali";
 import FooterPublik from "@/components/layout/FooterPublik";
 import { wajibPeran } from "@/lib/auth";
 import { ambilSatu } from "@/lib/query";
@@ -31,13 +31,7 @@ export default async function EditProfilCurator({ searchParams }) {
         <NavbarPublik />
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
             <div className="mb-6">
-                <Link
-                    href="/"
-                    className="inline-flex items-center gap-1.5 font-label text-label-lg text-on-surface-variant hover:text-on-surface hover:underline underline-offset-4"
-                >
-                    <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-                    <span>Kembali ke Beranda</span>
-                </Link>
+                <TombolKembali bawaan={{ href: "/curators/" + pengguna.id, label: "Profil Curator" }} />
             </div>
             <div className="max-w-4xl space-y-8">
             <div>

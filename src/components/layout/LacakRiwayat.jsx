@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 export const KUNCI_RIWAYAT = "creosphere_riwayat";
+export const ACARA_RIWAYAT = "creosphere-riwayat";
 
 export function bacaRiwayat() {
     try {
@@ -26,8 +27,9 @@ export default function LacakRiwayat() {
         if (n >= 2 && riwayat[n - 2] === url) riwayat.pop();
         else riwayat.push(url);
         try {
-        sessionStorage.setItem(KUNCI_RIWAYAT, JSON.stringify(riwayat.slice(-30)));
+            sessionStorage.setItem(KUNCI_RIWAYAT, JSON.stringify(riwayat.slice(-30)));
         } catch {}
+        window.dispatchEvent(new Event(ACARA_RIWAYAT));
     }, [pathname, query]);
 
     return null;

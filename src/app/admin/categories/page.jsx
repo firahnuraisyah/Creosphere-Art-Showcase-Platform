@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
 import { formatAngka } from "@/lib/format";
@@ -33,9 +32,8 @@ export default async function ManajemenKategori({ searchParams }) {
                 Kelola enam medium seni utama dan kategori &ldquo;Lainnya&rdquo; yang dilindungi sistem.
             </p>
             </div>
-            <Link href="/admin/categories?tambah=1" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            <span>Tambah Kategori Baru</span>
+            <Link href="/admin/categories?tambah=1" className="px-5 py-2.5 rounded-DEFAULT bg-light-primary text-light-on-primary font-medium hover:bg-primary-hover transition-colors text-body-sm shadow-sm inline-flex items-center justify-center">
+            Tambah Kategori Baru
             </Link>
         </div>
 
