@@ -1,14 +1,20 @@
-import SidebarDashboard from "@/components/layout/SidebarDashboard";
+import NavbarPublik from "@/components/layout/NavbarPublik";
+import SubNavbarPeran from "@/components/layout/SubNavbarPeran";
+import FooterPublik from "@/components/layout/FooterPublik";
 import { wajibPeran } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-// Kerangka Dashboard Curator. 
 export default async function LayoutCurator({ children }) {
-    const pengguna = await wajibPeran(["curator"], { harusDisetujui: true });
+    await wajibPeran(["curator"], { harusDisetujui: true });
     return (
-        <SidebarDashboard tema="curator" pengguna={pengguna}>
-        {children}
-        </SidebarDashboard>
+        <>
+        <NavbarPublik />
+        <SubNavbarPeran tema="curator" />
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+            {children}
+        </main>
+        <FooterPublik />
+        </>
     );
 }

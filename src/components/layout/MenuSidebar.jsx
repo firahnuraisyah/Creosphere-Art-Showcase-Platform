@@ -2,61 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    LayoutDashboard, Palette, Upload, Bookmark, Trophy, UserCog,
-    PlusCircle, Building2, UserCheck, ShieldAlert, Tags, Users,
-} from "lucide-react";
+import { LayoutDashboard, UserCheck, ShieldAlert, Tags, Users } from "lucide-react";
 
-// Daftar menu tiap peran. 
-const DAFTAR_MENU = {
-    member: [
-        { href: "/member", label: "Dashboard", ikon: LayoutDashboard },
-        { href: "/member/artworks", label: "Karya Saya", ikon: Palette },
-        { href: "/member/artworks/new", label: "Unggah Karya", ikon: Upload },
-        { href: "/member/favorites", label: "Favorit Saya", ikon: Bookmark },
-        { href: "/member/submissions", label: "Submisi Saya", ikon: Trophy },
-        { href: "/member/profile", label: "Edit Profil", ikon: UserCog },
-    ],
-    curator: [
-        { href: "/curator", label: "Dashboard Curator", ikon: LayoutDashboard },
-        { href: "/curator/challenges", label: "Challenge Saya", ikon: Trophy },
-        { href: "/curator/challenges/new", label: "Buat Challenge", ikon: PlusCircle },
-        { href: "/curator/profile", label: "Profil Curator", ikon: Building2 },
-    ],
-    admin: [
-        { href: "/admin", label: "Dashboard", ikon: LayoutDashboard },
-        { href: "/admin/curators", label: "Persetujuan Curator", ikon: UserCheck, kunciLencana: "curator", warna: "peringatan" },
-        { href: "/admin/moderation", label: "Antrean Moderasi", ikon: ShieldAlert, kunciLencana: "laporan", warna: "bahaya" },
-        { href: "/admin/categories", label: "Kategori", ikon: Tags, kunciLencana: "kategori", warna: "netral" },
-        { href: "/admin/users", label: "Manajemen Pengguna", ikon: Users },
-    ],
-    };
+const MENU_ADMIN = [
+    { href: "/admin", label: "Dashboard", ikon: LayoutDashboard },
+    { href: "/admin/curators", label: "Persetujuan Curator", ikon: UserCheck, kunciLencana: "curator", warna: "peringatan" },
+    { href: "/admin/moderation", label: "Antrean Moderasi", ikon: ShieldAlert, kunciLencana: "laporan", warna: "bahaya" },
+    { href: "/admin/categories", label: "Kategori", ikon: Tags, kunciLencana: "kategori", warna: "netral" },
+    { href: "/admin/users", label: "Manajemen Pengguna", ikon: Users },
+];
 
-    const kelasAktif = {
-    member: "bg-primary-container text-on-surface",
-    curator: "bg-primary-container text-on-surface",
-    admin: "bg-primary-container text-on-surface",
-    };
-    const kelasIkonAktif = { member: "text-primary", curator: "text-primary", admin: "text-primary" };
-    const kelasBiasa = {
-    member: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
-    curator: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
-    admin: "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
-    };
-
-    export default function MenuSidebar({ tema, lencana = {} }) {
+export default function MenuSidebar({ lencana = {} }) {
     const pathname = usePathname();
-    const daftar = DAFTAR_MENU[tema];
 
     let aktifHref = null;
-    for (const item of daftar) {
+    for (const item of MENU_ADMIN) {
         const cocok = pathname === item.href || pathname.startsWith(item.href + "/");
         if (cocok && (!aktifHref || item.href.length > aktifHref.length)) aktifHref = item.href;
     }
 
     return (
-        <nav className="space-y-1.5" aria-label="Menu dashboard">
-        {daftar.map((item) => {
+        <nav className="space-y-1.5" aria-label="Menu dashboard admin">
+        {MENU_ADMIN.map((item) => {
             const aktif = item.href === aktifHref;
             const Ikon = item.ikon;
             const jumlah = item.kunciLencana ? lencana[item.kunciLencana] : 0;
@@ -73,11 +40,13 @@ const DAFTAR_MENU = {
                 aria-current={aktif ? "page" : undefined}
                 className={
                 "flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-DEFAULT font-medium text-body-sm transition-colors " +
-                (aktif ? kelasAktif[tema] : kelasBiasa[tema])
+                (aktif
+                    ? "bg-primary-container text-on-surface"
+                    : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface")
                 }
             >
                 <span className="flex items-center gap-3">
-                <Ikon className={"w-4 h-4 " + (aktif ? kelasIkonAktif[tema] : "")} />
+                <Ikon className={"w-4 h-4 " + (aktif ? "text-primary" : "")} />
                 <span>{item.label}</span>
                 </span>
                 {jumlah > 0 && (
