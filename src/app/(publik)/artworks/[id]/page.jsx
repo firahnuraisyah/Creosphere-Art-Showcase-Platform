@@ -12,7 +12,7 @@ import PencatatTayang from "@/components/karya/PencatatTayang";
 import { ambilBanyak, ambilSatu } from "@/lib/query";
 import { ambilPengguna } from "@/lib/auth";
 import { ubahKeId } from "@/lib/validasi";
-import { formatTanggal, waktuRelatif } from "@/lib/format";
+import { formatTanggal, formatAngkaSingkat, waktuRelatif } from "@/lib/format";
 import { toggleSuka, toggleFavorit, tambahKomentar, hapusKomentar, laporKarya } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +22,9 @@ export async function generateMetadata({ params }) {
     const idAngka = ubahKeId(id);
     const karya = idAngka ? await ambilSatu("SELECT title FROM artworks WHERE id = $1", [idAngka]) : null;
     return { title: karya ? karya.title : "Karya" };
-    }
+}
 
-    export default async function DetailKarya({ params, searchParams }) {
+export default async function DetailKarya({ params, searchParams }) {
     const { id } = await params;
     const { galat, sukses } = await searchParams;
     const idKarya = ubahKeId(id);
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }) {
     const karya = await ambilSatu(
         `SELECT a.id, a.title, a.description, a.artwork_type, a.file_url, a.view_count, a.created_at, a.user_id,
                 c.name AS kategori, c.is_system,
-                u.display_name AS artis, u.is_active AS artis_aktif, u.avatar_url, u.headline, u.bio
+                u.display_name AS artis, u.is_active AS artis_aktif, u.avatar_url, u.bio
         FROM artworks a
         JOIN users u ON u.id = a.user_id
         JOIN categories c ON c.id = a.category_id
@@ -115,12 +115,12 @@ export async function generateMetadata({ params }) {
                     </div>
                 </div>
                 )}
-                {/* Aksi interaksi: suka, favorit, laporkan */}
+                
                 <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-light-outline-variant">
                 <form action={toggleSuka}>
                     <input type="hidden" name="artwork_id" value={karya.id} />
                     <button type="submit" className={"px-3 py-2 rounded-DEFAULT border text-label-lg font-medium transition-colors inline-flex items-center gap-1.5 " + (suka?.saya ? "bg-light-primary-container text-light-on-primary-container border-light-primary/30" : "bg-light-surface text-light-on-surface border-light-outline hover:bg-warm-cream")}>
-                    <Heart className={"w-4 h-4 text-terracotta " + (suka?.saya ? "fill-current" : "")} /> {suka ? suka.jumlah : 0}
+                    <Heart className={"w-4 h-4 text-terracotta " + (suka?.saya ? "fill-current" : "")} /> {formatAngkaSingkat(suka ? suka.jumlah : 0)}
                     </button>
                 </form>
                 <form action={toggleFavorit}>
@@ -143,7 +143,6 @@ export async function generateMetadata({ params }) {
                     {!karya.artis_aktif && (
                     <span className="inline-flex mb-1 px-2 py-0.5 rounded-full bg-slate-900 text-white text-label-sm font-medium">Akun nonaktif</span>
                     )}
-                    {karya.headline && <p className="text-body-sm text-light-on-surface-variant">{karya.headline}</p>}
                 </div>
                 </div>
                 {karya.bio && <p className="text-body-sm text-light-on-surface-variant line-clamp-4">{karya.bio}</p>}

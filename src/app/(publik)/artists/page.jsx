@@ -3,7 +3,7 @@ import { Users } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import KeadaanKosong from "@/components/ui/KeadaanKosong";
 import { ambilBanyak } from "@/lib/query";
-import { formatAngka } from "@/lib/format";
+import { formatAngka, formatAngkaSingkat } from "@/lib/format";
 
 export const metadata = { title: "Komunitas" };
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function Komunitas({ searchParams }) {
             `
         )
         : await ambilBanyak(
-            `SELECT u.id, u.display_name, u.is_active, u.avatar_url, u.headline, u.bio,
+            `SELECT u.id, u.display_name, u.is_active, u.avatar_url, u.bio,
                     (SELECT COUNT(*) FROM artworks a WHERE a.user_id = u.id) AS jumlah_karya,
                     (SELECT COUNT(*) FROM likes l JOIN artworks a ON a.id = l.artwork_id WHERE a.user_id = u.id) AS jumlah_like,
                     (SELECT COUNT(*) FROM submissions s WHERE s.user_id = u.id) AS jumlah_challenge
@@ -79,14 +79,14 @@ export default async function Komunitas({ searchParams }) {
                         {!s.is_active && (
                         <span className="self-start px-2 py-0.5 rounded-full bg-slate-900 text-white text-label-sm font-medium">Akun nonaktif</span>
                         )}
-                        {(s.headline || s.affiliation) && (
+                        {tabCurator && (s.headline || s.affiliation) && (
                         <p className="font-body text-body-md text-outline truncate">{s.headline || s.affiliation}</p>
                         )}
                         <p className="font-body text-body-sm text-on-surface-variant line-clamp-2">{s.bio || "Belum ada bio."}</p>
                         <p className="font-label text-label-md text-outline tabular-nums pt-1">
                         {tabCurator
                             ? formatAngka(s.jumlah_challenge) + " challenge · " + formatAngka(s.jumlah_submisi) + " submisi diterima"
-                            : formatAngka(s.jumlah_karya) + " karya · " + formatAngka(s.jumlah_like) + " suka · " + formatAngka(s.jumlah_challenge) + " challenge"}
+                            : formatAngka(s.jumlah_karya) + " karya · " + formatAngkaSingkat(s.jumlah_like) + " suka · " + formatAngka(s.jumlah_challenge) + " challenge"}
                         </p>
                     </div>
                     </Link>

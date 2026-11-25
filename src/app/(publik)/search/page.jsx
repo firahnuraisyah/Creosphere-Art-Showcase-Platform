@@ -33,10 +33,10 @@ export default async function HalamanCari({ searchParams }) {
         );
 
         seniman = await ambilBanyak(
-        `SELECT u.id, u.display_name, u.is_active, u.avatar_url, u.headline,
+        `SELECT u.id, u.display_name, u.is_active, u.avatar_url,
                 (SELECT COUNT(*) FROM artworks a WHERE a.user_id = u.id) AS jumlah_karya
         FROM users u
-        WHERE u.role = 'member' AND (u.display_name ILIKE $1 OR u.headline ILIKE $1)
+        WHERE u.role = 'member' AND u.display_name ILIKE $1
         ORDER BY LOWER(u.display_name) ASC
         LIMIT ${BATAS_SENIMAN}`,
         [pola]
@@ -82,24 +82,12 @@ export default async function HalamanCari({ searchParams }) {
                 Cari karya, seniman, kategori, dan challenge dalam satu tempat.
                 </p>
             </div>
-            <form action="/search" method="GET" role="search" className="relative max-w-xl flex items-center">
-                <label htmlFor="cari-halaman" className="sr-only">Kata kunci pencarian</label>
-                <Search className="w-[18px] h-[18px] text-outline absolute left-3 pointer-events-none" aria-hidden="true" />
-                <input
-                id="cari-halaman" type="search" name="q" defaultValue={q} maxLength={100}
-                placeholder="Cari karya, seniman, kategori, atau challenge..."
-                className="w-full h-11 pl-9 pr-24 rounded bg-surface border border-border-input text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary-container focus:outline-none"
-                />
-                <button type="submit" className="absolute right-1.5 h-8 px-4 rounded bg-primary text-on-primary font-label text-label-lg hover:bg-primary-hover transition-colors duration-state-change">
-                Cari
-                </button>
-            </form>
             </div>
         </section>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col gap-14">
             {!q && (
-            <KeadaanKosong ikon={Search} judul="Mulai mencari" deskripsi="Ketik judul karya, nama atau tag, nama seniman, kategori, atau judul challenge pada kolom di atas." />
+            <KeadaanKosong ikon={Search} judul="Mulai mencari" deskripsi="Ketik judul karya, nama atau tag, nama seniman, kategori, atau judul challenge pada kolom pencarian di bagian atas halaman." />
             )}
             {q && !adaHasil && (
             <KeadaanKosong ikon={SearchX} judul={"Tidak ada hasil untuk “" + q + "”"} deskripsi="Periksa ejaan kata kunci atau coba kata yang lebih umum." />
@@ -129,7 +117,6 @@ export default async function HalamanCari({ searchParams }) {
                     <Avatar nama={s.display_name} src={s.avatar_url} ukuran="w-16 h-16 shrink-0" teks="text-xl" indeksWarna={i + 1} />
                     <div className="flex flex-col gap-0.5 min-w-0">
                         <h3 className="font-title text-title-md text-on-surface truncate group-hover:underline">{s.display_name}</h3>
-                        {s.headline && <p className="font-body text-body-sm text-outline truncate">{s.headline}</p>}
                         <p className="font-label text-label-md text-outline tabular-nums">{formatAngka(s.jumlah_karya)} karya</p>
                     </div>
                     </Link>
