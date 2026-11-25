@@ -1,7 +1,14 @@
-    import NavbarPublik from "@/components/layout/NavbarPublik";
-    import FooterPublik from "@/components/layout/FooterPublik";
+import { redirect } from "next/navigation";
+import NavbarPublik from "@/components/layout/NavbarPublik";
+import FooterPublik from "@/components/layout/FooterPublik";
+import { ambilPengguna, tujuanDashboard } from "@/lib/auth";
 
-    export default function LayoutPublik({ children }) {
+export default async function LayoutPublik({ children }) {
+    const pengguna = await ambilPengguna();
+    if (pengguna?.role === "admin") {
+        redirect(tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active));
+    }
+
     return (
         <>
         <NavbarPublik />
@@ -9,4 +16,4 @@
         <FooterPublik />
         </>
     );
-    }
+}

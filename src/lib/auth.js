@@ -28,7 +28,12 @@ export async function wajibPeran(peranDiizinkan, { harusDisetujui = false } = {}
     const pengguna = await ambilPengguna();
     if (!pengguna) redirect("/login");
     if (pengguna.is_active === false) redirect("/nonaktif");
-    if (!peranDiizinkan.includes(pengguna.role)) redirect("/403");
+    if (!peranDiizinkan.includes(pengguna.role)) {
+        if (pengguna.role === "admin") {
+            redirect(tujuanDashboard(pengguna.role, pengguna.status, pengguna.is_active));
+        }
+        redirect("/403");
+    }
     if (pengguna.role === "curator" && harusDisetujui && pengguna.status !== "approved") {
         redirect("/curator/pending");
     }

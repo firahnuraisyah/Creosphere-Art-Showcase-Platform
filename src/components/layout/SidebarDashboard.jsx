@@ -6,21 +6,24 @@ import MenuSidebar from "@/components/layout/MenuSidebar";
 
 // Kerangka sidebar kiri dashboard
 export default function SidebarDashboard({ tema, pengguna, lencana = {}, children }) {
+    const tujuanLogo = tema === "admin" ? "/admin" : "/";
     const tombolBeranda =
         "w-full py-2 px-3 rounded text-label-lg font-medium bg-surface border border-border-input text-on-surface hover:bg-surface-container-low flex items-center justify-center gap-2 transition-colors";
 
     const isi = (
         <>
         <div className="space-y-8">
-            <Logo />
+            <Logo href={tujuanLogo} />
             <MenuSidebar tema={tema} lencana={lencana} />
         </div>
 
         <div className="pt-6 border-t border-outline-variant space-y-3">
+            {tema !== "admin" && (
             <Link href="/" className={tombolBeranda}>
-            <Home className="w-4 h-4" aria-hidden="true" />
-            <span>Kembali ke Beranda</span>
+                <Home className="w-4 h-4" aria-hidden="true" />
+                <span>Kembali ke Beranda</span>
             </Link>
+            )}
 
             <div className="flex items-center gap-3">
             {pengguna.avatar_url ? (
@@ -71,17 +74,19 @@ export default function SidebarDashboard({ tema, pengguna, lencana = {}, childre
         <div className="lg:hidden sticky top-0 z-30 border-b bg-surface border-outline-variant">
             <details className="group">
             <summary className="flex items-center justify-between px-6 h-14 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <Logo />
+                <Logo href={tujuanLogo} />
                 <span className="p-2 rounded text-on-surface" aria-label="Buka menu">
                 <Menu className="w-5 h-5" />
                 </span>
             </summary>
             <div className="p-6 space-y-6 bg-surface">
                 <MenuSidebar tema={tema} lencana={lencana} />
+                {tema !== "admin" && (
                 <Link href="/" className={tombolBeranda}>
-                <Home className="w-4 h-4" aria-hidden="true" />
-                <span>Kembali ke Beranda</span>
+                    <Home className="w-4 h-4" aria-hidden="true" />
+                    <span>Kembali ke Beranda</span>
                 </Link>
+                )}
                 <form action="/api/logout" method="POST">
                 <button type="submit" className="w-full py-2 text-sm rounded flex items-center justify-center gap-1 text-danger hover:bg-rose-50">
                     <LogOut className="w-4 h-4" /> Keluar

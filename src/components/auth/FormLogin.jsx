@@ -30,7 +30,7 @@ export default function FormLogin({ next, pesanAwal }) {
             setMemuat(false);
             return;
         }
-        router.push(data.tujuan);
+        router.replace(data.tujuan);
         router.refresh();
         } catch {
         setGalat("Tidak dapat menghubungi server.");
