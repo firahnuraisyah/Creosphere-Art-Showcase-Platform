@@ -27,7 +27,7 @@ export default async function JelajahKarya({ searchParams }) {
             <div className="flex flex-col gap-1.5">
                 <h1 className="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Jelajahi Semua Karya</h1>
                 <p className="font-body text-body-md text-on-surface-variant max-w-2xl">
-                Temukan karya dari seluruh kategori kreatif dalam satu galeri, tanpa filter berdasarkan kebangsaan seniman.
+                Temukan karya dari seluruh kategori kreatif dalam satu galeri.
                 </p>
             </div>
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" aria-label="Filter menurut kategori">

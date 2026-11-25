@@ -47,7 +47,7 @@ export default async function Komunitas({ searchParams }) {
                 <p className="font-body text-body-md text-on-surface-variant max-w-2xl">
                 {tabCurator
                     ? "Kenali para Curator yang menyelenggarakan challenge dan memilih karya terbaik."
-                    : "Terhubung dengan pelukis, pematung, dan pengrajin tekstil dari komunitas global."}
+                    : "Terhubung dengan seniman-seniman serta kurator dari komunitas global."}
                 </p>
             </div>
             <div className="flex items-center gap-2" aria-label="Pilih daftar">

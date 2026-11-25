@@ -151,11 +151,6 @@ export default async function ProfilCurator({ params, searchParams }) {
 
         <section id="challenge-curator" aria-label="Challenge oleh curator" className="py-10 lg:py-14">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between gap-4 mb-8">
-                <h2 className="font-headline text-headline-md text-on-surface">Challenge oleh {c.display_name}</h2>
-                <span className="font-body text-body-sm text-outline tabular-nums">{formatAngka(challenge.length)} challenge</span>
-            </div>
-
             {challenge.length === 0 ? (
                 <KeadaanKosong judul="Belum ada challenge" deskripsi="Curator ini belum membuat challenge." />
             ) : (

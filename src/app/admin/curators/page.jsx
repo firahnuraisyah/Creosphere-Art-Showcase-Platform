@@ -1,4 +1,4 @@
-import { Check, UserCheck } from "lucide-react";
+import { Check, UserCheck, FileText, ExternalLink, Download } from "lucide-react";
 import { wajibPeran } from "@/lib/auth";
 import { ambilBanyak } from "@/lib/query";
 import { formatTanggal } from "@/lib/format";
@@ -8,6 +8,16 @@ import Pemberitahuan from "@/components/ui/Pemberitahuan";
 import TombolKonfirmasi from "@/components/ui/TombolKonfirmasi";
 import { bacaTautan } from "@/lib/tautan";
 import { setujuiCurator, tolakCurator } from "../actions";
+import path from "path";
+
+function labelEkstensi(url) {
+    if (!url) return "Berkas";
+    const ext = path.extname(url).toLowerCase();
+    if (ext === ".pdf") return "PDF";
+    if (ext === ".doc") return "DOC";
+    if (ext === ".docx") return "DOCX";
+    return "Berkas";
+}
 
 export const metadata = { title: "Persetujuan Curator" };
 export const dynamic = "force-dynamic";
@@ -55,15 +65,28 @@ export default async function PersetujuanCurator({ searchParams }) {
                         </p>
                         {c.bio && <p className="text-body-md text-light-on-surface-variant pt-1 max-w-2xl">&ldquo;{c.bio}&rdquo;</p>}
                         {(c.cv_url || c.portfolio_url) && (
-                        <div className="flex flex-wrap items-center gap-3 pt-1 text-body-sm">
+                        <div className="flex flex-wrap items-center gap-2 pt-2">
                             {c.cv_url && (
-                            <a href={c.cv_url} target="_blank" rel="noopener noreferrer" className="text-light-primary font-medium hover:underline">
-                                Lihat CV
+                            <a
+                                href={c.cv_url}
+                                download
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-light-outline bg-light-surface-container text-body-sm font-medium text-light-on-surface hover:bg-sand/40 transition-colors"
+                            >
+                                <FileText className="w-3.5 h-3.5 text-light-primary shrink-0" />
+                                <span>Unduh CV</span>
+                                <span className="text-xs text-light-on-surface-variant font-normal">({labelEkstensi(c.cv_url)})</span>
+                                <Download className="w-3 h-3 text-light-on-surface-variant shrink-0" />
                             </a>
                             )}
                             {c.portfolio_url && (
-                            <a href={c.portfolio_url} target="_blank" rel="noopener noreferrer" className="text-light-primary font-medium hover:underline">
-                                Lihat Portofolio
+                            <a
+                                href={c.portfolio_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-light-outline bg-light-surface-container text-body-sm font-medium text-light-primary hover:bg-blue-50 transition-colors"
+                            >
+                                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                                <span>Lihat Portofolio</span>
                             </a>
                             )}
                         </div>

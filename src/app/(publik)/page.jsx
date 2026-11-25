@@ -93,7 +93,6 @@ export default async function Beranda() {
         <main className="flex-1">
         <section aria-label="Sambutan galeri" className="bg-surface border-b border-outline-variant overflow-hidden lg:h-[calc(100svh-65px)] lg:min-h-[520px] lg:max-h-[760px]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-0 lg:h-full relative flex flex-col gap-8 lg:block">
-            {/* Layar lebar: susunan karya di kiri dan kanan */}
             <div className="hidden lg:flex absolute top-0 bottom-0 left-8 w-[26%] gap-3 pt-6 overflow-hidden" aria-label="Karya pilihan acak">
                 <KolomHero isi={kolomHero[0]} />
                 <KolomHero isi={kolomHero[1]} turun />
@@ -109,7 +108,7 @@ export default async function Beranda() {
                     Ruang Global untuk Suara-Suara Kreatif
                 </h1>
                 <p className="font-body text-body-md lg:text-body-lg text-on-surface-variant max-w-md text-pretty">
-                    Temukan lukisan, gambar, tekstil, dan patung dari seniman independen di seluruh dunia — terbuka untuk dijelajahi, diapresiasi, dan ditantang.
+                    Temukan karya-karya dari seniman independen di seluruh dunia — terbuka untuk dijelajahi, diapresiasi, dan ditantang.
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
                     <Link href="/artworks" className={tombolUtama}>Jelajahi Galeri</Link>
@@ -130,7 +129,7 @@ export default async function Beranda() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <StripKarya
                 judul="Karya Terpopuler"
-                deskripsi="Karya yang paling banyak disukai komunitas. Geser ke samping untuk melihat lebih banyak karya."
+                deskripsi="Karya yang paling banyak disukai komunitas."
             >
                 {karyaPopuler.length === 0 ? (
                 <p className="font-body text-body-sm text-outline py-8">Belum ada karya. Karya yang diunggah seniman akan tampil di sini.</p>
@@ -159,7 +158,7 @@ export default async function Beranda() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <StripKarya
                 judul="Art Challenge"
-                deskripsi="Ikutkan satu karya ke pameran bertema yang dikurasi para Curator. Geser ke samping untuk melihat lebih banyak challenge."
+                deskripsi="Ikutkan satu karya ke pameran bertema yang dikurasi para Curator."
             >
                 {challenge.length === 0 ? (
                 <p className="font-body text-body-sm text-outline py-8">Belum ada challenge yang aktif atau akan datang.</p>
@@ -208,9 +207,9 @@ export default async function Beranda() {
             </StripKarya>
 
             <div className="pt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <Link href="/challenges" className="font-label text-label-lg text-primary hover:underline">Semua challenge</Link>
+                <Link href="/challenges" className="font-label text-label-lg text-primary hover:underline">Semua challenge </Link>
                 <Link href="/challenges?status=berakhir" className="inline-flex items-center gap-1.5 font-label text-label-lg text-primary hover:underline">
-                Lihat pemenang challenge yang sudah selesai <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                Lihat pemenang challenge <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
             </div>
             </div>

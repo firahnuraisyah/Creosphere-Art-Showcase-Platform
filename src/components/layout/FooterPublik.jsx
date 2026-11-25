@@ -18,7 +18,7 @@ export default function FooterPublik() {
             </div>
         </div>
         <p className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 text-center font-label text-label-md text-outline">
-            © 2026 Creosphere. Proyek Akhir — Praktikum Pemrograman Web.
+            &copy; 2026 Creosphere.
         </p>
         </footer>
     );
