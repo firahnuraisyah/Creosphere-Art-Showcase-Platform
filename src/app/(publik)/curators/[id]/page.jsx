@@ -80,7 +80,7 @@ export default async function ProfilCurator({ params, searchParams }) {
                     className="inline-flex items-center gap-1.5 font-label text-label-lg text-on-surface-variant hover:text-on-surface hover:underline underline-offset-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-                    <span>Kembali ke Beranda</span>
+                    <span>Kembali</span>
                 </Link>
                 {adalahPemilik && (
                     <Link

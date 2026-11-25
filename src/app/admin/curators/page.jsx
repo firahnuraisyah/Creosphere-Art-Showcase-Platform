@@ -99,7 +99,7 @@ export default async function PersetujuanCurator({ searchParams }) {
                         nilai={{ id: c.id }}
                         judulDialog="Tolak Curator?"
                         item={c.display_name}
-                        pesan="Akun ditandai Ditolak dan pemiliknya hanya dapat menghapus akun."
+                        pesan="Akun ditandai Ditolak dan pemiliknya tidak dapat mengelola akun."
                         teksAksi="Tolak"
                         className="px-4 py-2 rounded bg-rose-50 text-danger border border-rose-200 text-body-sm font-semibold hover:bg-rose-100 transition-colors"
                     >
